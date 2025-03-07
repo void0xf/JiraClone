@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectService.API", "Services\ProjectService.API\ProjectService.API.csproj", "{8F0138A5-3A42-4272-877D-DE42F0DD8BDD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Integrations", "Integrations\Integrations.csproj", "{8C271413-ABF6-4F07-84D4-97D63F350DD0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{8F0138A5-3A42-4272-877D-DE42F0DD8BDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F0138A5-3A42-4272-877D-DE42F0DD8BDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F0138A5-3A42-4272-877D-DE42F0DD8BDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C271413-ABF6-4F07-84D4-97D63F350DD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C271413-ABF6-4F07-84D4-97D63F350DD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C271413-ABF6-4F07-84D4-97D63F350DD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C271413-ABF6-4F07-84D4-97D63F350DD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
