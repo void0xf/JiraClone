@@ -12,9 +12,14 @@ builder.Services.AddMediatR(config =>
 });
 
 
+builder.Services.AddMarten(options =>
+{
+    options.Connection(builder.Configuration.GetConnectionString("DefaultConnection")!);
+}).UseLightweightSessions();
+
 var app = builder.Build();
 
-app.MapCarter();    
+app.MapCarter();
 // Configure the HTTP request pipeline.
 /*
 if (app.Environment.IsDevelopment())
