@@ -1,0 +1,6 @@
+﻿services:
+  projectdb:
+    image: postgres
+  
+volumes:
+  postgres_projectdb:

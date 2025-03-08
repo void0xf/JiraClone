@@ -1,0 +1,14 @@
+﻿services:
+  projectdb:
+    container_name: projectdb
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=ProjectDb
+    restart: always
+    ports:
+     - "5432:5432"
+    volumes:
+     - postgres_projectdb:/var/lib/postgresql/data
+
+  
