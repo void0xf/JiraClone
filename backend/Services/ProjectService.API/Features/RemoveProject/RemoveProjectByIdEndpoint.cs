@@ -1,4 +1,7 @@
-﻿namespace ProjectService.API.Features.RemoveProject;
+﻿using SharedKernel;
+using ProjectService.API.Features.RemoveProject;
+
+namespace ProjectService.API.Features.RemoveProject;
 
 public class RemoveProjectByIdEndpoint : ICarterModule
 {
@@ -6,8 +9,8 @@ public class RemoveProjectByIdEndpoint : ICarterModule
     {
         app.MapDelete("projects/{id}", async (ISender sender, Guid id) =>
         {
-            var response = await sender.Send(new RemoveProjectCommand(id));
-            return response;
+            var result = await sender.Send(new RemoveProjectCommand(id));
+            return result.ToMinimalApiResult();
         });
     }
 }
