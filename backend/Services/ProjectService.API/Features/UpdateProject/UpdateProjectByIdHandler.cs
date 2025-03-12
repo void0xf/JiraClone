@@ -1,23 +1,39 @@
-﻿
-using ProjectService.API.Models;
+﻿using ProjectService.API.Models;
+using SharedKernel;
 
 namespace ProjectService.API.Features.UpdateProject;
 
-public record UpdateProjectCommand(Project project) : IRequest<UpdateProjectResult>;
-public record UpdateProjectResult(Guid projectId);
+// Command, Result, and Handler in the same file
+public record UpdateProjectCommand(Project project) : IRequest<Result<UpdateProjectResult>>;
 
-public class UpdateProjectByIdHandler(IDocumentSession session) : IRequestHandler<UpdateProjectCommand, UpdateProjectResult>
+public record UpdateProjectResult(Guid ProjectId);
+
+public class UpdateProjectByIdHandler(IDocumentSession session) : IRequestHandler<UpdateProjectCommand, Result<UpdateProjectResult>>
 {
-    public async Task<UpdateProjectResult> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
+    public async Task<Result<UpdateProjectResult>> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
     {
-       var project = await session.Query<Project>()
-            .Where(p => p.Id == request.project.Id)
-            .ToListAsync(cancellationToken);
-       
-       if (project.Count <= 0) return new UpdateProjectResult(Guid.Empty);
-       
-       session.Update(request.project);
-       await session.SaveChangesAsync(cancellationToken);
-       return new UpdateProjectResult(request.project.Id);
+        try
+        {
+            var existingProject = await session.Query<Project>()
+                .FirstOrDefaultAsync(p => p.Id == request.project.Id, cancellationToken);
+            
+            if (existingProject == null)
+            {
+                return Result<UpdateProjectResult>.Failure(
+                    Error.NotFound(ErrorCode.NotFound, "Project not found", "It's seems like your project does not exist"));
+            }
+            
+            // Optionally update only the necessary properties here
+            session.Update(request.project);
+            await session.SaveChangesAsync(cancellationToken);
+            
+            return Result<UpdateProjectResult>.Success(new UpdateProjectResult(request.project.Id));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return Result<UpdateProjectResult>.Failure(
+                Error.Unexpected(ErrorCode.UnknownError, "Failed to update project", "Failed to update project", e));
+        }
     }
 }
