@@ -1,4 +1,5 @@
 ﻿using ProjectService.API.Models;
+using SharedKernel;
 
 namespace ProjectService.API.Features.GetProject;
 
@@ -11,8 +12,8 @@ public class GetProjectsByLeadIdEndpoint: ICarterModule
     {
         app.MapGet("/projects", async (ISender sender) =>
         {
-            var result = await sender.Send(new GetProjectsByLeadIdQuery());
-            return result.Adapt<GetProjectsByLeadIdQueryResponse>();
+            var result = await sender.Send(new GetProjectsByLeadIdQuery(Guid.Empty));
+            return result.ToMinimalApiResult();
         });
     }
 }
