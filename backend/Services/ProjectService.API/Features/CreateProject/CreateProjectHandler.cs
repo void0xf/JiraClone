@@ -1,4 +1,5 @@
 ﻿using ProjectService.API.Models;
+using SharedKernel;
 
 namespace ProjectService.API.Features.CreateProject;
 
@@ -6,13 +7,13 @@ public record CreateProjectCommand(
     string Name, 
     string ProjectKey, 
     AccessLevel AccessLevel,
-    ProjectTemplate  ProjectTemplate) : IRequest<CreateProjectResult>;
+    ProjectTemplate  ProjectTemplate) : IRequest<Result<CreateProjectResult>>;
 
 public record CreateProjectResult(Guid ProjectId);
 
-public class CreateProjectHandler(IDocumentSession session) : IRequestHandler<CreateProjectCommand, CreateProjectResult>
+public class CreateProjectHandler(IDocumentSession session) : IRequestHandler<CreateProjectCommand, Result<CreateProjectResult>>
 {
-    public async Task<CreateProjectResult> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
+    public async Task<Result<CreateProjectResult>> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
         var project = new Project
         {
@@ -22,14 +23,23 @@ public class CreateProjectHandler(IDocumentSession session) : IRequestHandler<Cr
             AccessLevel = request.AccessLevel,
             ProjectTemplate = request.ProjectTemplate,
             CreatedAt = DateTime.UtcNow,
-            LeadId = Guid.Empty,
+            LeadId = Guid.Empty,//empty due to lack of authorization at this point
             Members = new List<Guid>(),
             UpdatedAt = DateTime.UtcNow
         };
-        //save in db
-        session.Store(project);
-        await session.SaveChangesAsync(cancellationToken);
+        try
+        {
+            session.Store(project);
+            await session.SaveChangesAsync(cancellationToken);
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return Result<CreateProjectResult>.Failure(Error.Unexpected(ErrorCode.UnknownError, "Failed to create project", "Failed to create project", e));
+        }
         
-        return new CreateProjectResult(project.Id);
+            
+        return Result<CreateProjectResult>.Success(new CreateProjectResult(project.Id));
     }
 }
