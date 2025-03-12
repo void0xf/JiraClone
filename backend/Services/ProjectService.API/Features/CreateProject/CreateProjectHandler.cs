@@ -10,7 +10,7 @@ public record CreateProjectCommand(
 
 public record CreateProjectResult(Guid ProjectId);
 
-public class CreateProjectHandler : IRequestHandler<CreateProjectCommand, CreateProjectResult>
+public class CreateProjectHandler(IDocumentSession session) : IRequestHandler<CreateProjectCommand, CreateProjectResult>
 {
     public async Task<CreateProjectResult> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
@@ -27,6 +27,9 @@ public class CreateProjectHandler : IRequestHandler<CreateProjectCommand, Create
             UpdatedAt = DateTime.UtcNow
         };
         //save in db
+        session.Store(project);
+        await session.SaveChangesAsync(cancellationToken);
+        
         return new CreateProjectResult(project.Id);
     }
 }
