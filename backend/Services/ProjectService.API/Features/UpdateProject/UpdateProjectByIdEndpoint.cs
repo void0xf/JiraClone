@@ -1,5 +1,4 @@
-﻿using ProjectService.API.Features.UpdateProject;
-using ProjectService.API.Features.CreateProject.DTO;
+﻿using ProjectService.API.Features.UpdateProject.DTO;
 using ProjectService.API.Models;
 using SharedKernel;
 
@@ -9,16 +8,27 @@ public class UpdateProjectByIdEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPut("/projects/{id}", async (HttpContext context, ISender sender, Guid id) =>
+        app.MapPut("/projects/{id}", async (UpdateProjectRequest request, ISender sender, Guid id) =>
         {
-            var bodyData = await context.Request.ReadFromJsonAsync<ProjectRequestDto>();
-            if (bodyData == null) return TypedResults.BadRequest("Invalid project data.");
+            var project = new Project
+            {
+                Id = id,
+                Name = request.Name,
+                ProjectKey = request.ProjectKey,
+                AccessLevel = request.AccessLevel,
+                ProjectTemplate = request.ProjectTemplate,
+                UpdatedAt = DateTime.UtcNow
+            };
             
-            var project = bodyData.Adapt<Project>();
-            project.Id = id;
+            var command = new UpdateProjectCommand(project);
+            var result = await sender.Send(command);
+            if (!result.IsSuccess)
+                return result.ToApiResponse().ToMinimalApiResult();;
             
-            var result = await sender.Send(new UpdateProjectCommand(project));
-            return result.ToMinimalApiResult();
+            var resultDto = result.Value.ProjectId.Adapt<UpdateProjectResponse>();
+            return ApiResponse<UpdateProjectResponse>.Success(resultDto).ToMinimalApiResult();
+            
+            
         });
     }
 }
