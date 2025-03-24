@@ -1,5 +1,7 @@
-﻿using ProjectService.API.Models;
+﻿using Marten.Patching;
+using ProjectService.API.Models;
 using SharedKernel;
+using SharedKernel.Utils;
 
 namespace ProjectService.API.Features.UpdateProject;
 
@@ -22,9 +24,10 @@ public class UpdateProjectByIdHandler(IDocumentSession session) : IRequestHandle
                 return Result<UpdateProjectResult>.Failure(
                     Error.NotFound(ErrorCode.NotFound, "Project not found", "It's seems like your project does not exist"));
             }
+            ObjectExtensions.CopyNonNullProperties(request.project, existingProject);
             
-            // Optionally update only the necessary properties here
-            session.Update(request.project);
+            
+            session.Update(existingProject);
             await session.SaveChangesAsync(cancellationToken);
             
             return Result<UpdateProjectResult>.Success(new UpdateProjectResult(request.project.Id));

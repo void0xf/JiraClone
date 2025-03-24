@@ -8,7 +8,7 @@ public class UpdateProjectByIdEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPut("/projects/{id}", async (UpdateProjectRequest request, ISender sender, Guid id) =>
+        app.MapPatch("/projects/{id}", async (UpdateProjectRequest request, ISender sender, Guid id) =>
         {
             var project = new Project
             {
