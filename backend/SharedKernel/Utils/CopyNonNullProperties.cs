@@ -28,5 +28,29 @@
                 }
             }
         }
+        
+        // Improved version that handles collections and explicitly marked properties
+        public static void CopyPropertiesForPatch<T>(T source, T target, HashSet<string> explicitlySetProperties = null)
+        {
+            if (source == null || target == null)
+                return;
+                
+            // Get all properties from the source object
+            var properties = typeof(T).GetProperties()
+                .Where(prop => prop.CanRead && prop.CanWrite);
+
+            foreach (var prop in properties)
+            {
+                // If we have a list of explicitly set properties and this property isn't in it, skip it
+                if (explicitlySetProperties != null && !explicitlySetProperties.Contains(prop.Name))
+                    continue;
+                
+                // Get the value from source
+                var value = prop.GetValue(source);
+                
+                // Set the value to the target, even if it's null (for PATCH semantics)
+                prop.SetValue(target, value);
+            }
+        }
     }
 }
