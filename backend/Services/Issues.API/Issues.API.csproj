@@ -6,4 +6,19 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="Features\DeleteIssue\" />
+      <Folder Include="Features\UpdateIssue\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Carter" Version="8.2.1" />
+      <PackageReference Include="Marten" Version="7.39.5" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Integrations\Integrations.csproj" />
+      <ProjectReference Include="..\..\SharedKernel\SharedKernel.csproj" />
+    </ItemGroup>
+
 </Project>
