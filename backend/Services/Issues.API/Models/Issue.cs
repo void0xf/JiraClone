@@ -1,9 +1,10 @@
-﻿
+﻿namespace Issues.API.Models;
+
 public class Issue
 {
-    public string Id { get; set; } = default!;  // Unique identifier
+    public Guid Id { get; set; } = default!;  // Unique identifier
     public string Key { get; set; } = default!;  // Project-prefixed ID (e.g., "PROJ-123")
-    public string ProjectId { get; set; } = default!;  // Reference to parent project
+    public Guid ProjectId { get; set; } = default!;  // Reference to parent project
     public IssueType IssueType { get; set; }  // Type of issue (Bug, Story, Task, Epic)
     public string? ParentIssueId { get; set; }  // Optional parent issue reference (for subtasks)
     public string Summary { get; set; } = default!;  // Brief description
@@ -31,13 +32,14 @@ public enum IssuePriority { Lowest, Low, Medium, High, Highest }
 // Label Model
 public class Label
 {
-    public string Id { get; set; } = default!;
+    public Guid Id { get; set; } = default!;
     public string Name { get; set; } = default!;
 }
 
 // **Encapsulated IssueActivity Class**
 public class IssueActivity
 {
+    public Guid Id { get; set; } = default!;
     public List<Comment> Comments { get; set; } = new List<Comment>();  // Comments on the issue
     public List<Attachment> Attachments { get; set; } = new List<Attachment>();  // Attached files
     public List<IssueHistory> History { get; set; } = new List<IssueHistory>();  // Change history
@@ -47,7 +49,7 @@ public class IssueActivity
 // Comments Model
 public class Comment
 {
-    public string Id { get; set; } = default!;
+    public Guid Id { get; set; } = default!;
     public string AuthorId { get; set; } = default!;
     public string Content { get; set; } = default!;
     public DateTime CreatedAt { get; set; }
@@ -56,7 +58,7 @@ public class Comment
 // Attachments Model
 public class Attachment
 {
-    public string Id { get; set; } = default!;
+    public Guid Id { get; set; } = default!;
     public string FileName { get; set; } = default!;
     public string FileUrl { get; set; } = default!;
     public string UploadedById { get; set; } = default!;
@@ -66,7 +68,7 @@ public class Attachment
 // Subtasks Model (to support hierarchical issues)
 public class Subtask
 {
-    public string Id { get; set; } = default!;
+    public Guid Id { get; set; } = default!;
     public string Summary { get; set; } = default!;
     public IssueStatus Status { get; set; }
 }
@@ -74,7 +76,7 @@ public class Subtask
 // Issue History Model (Tracks changes)
 public class IssueHistory
 {
-    public string Id { get; set; } = default!;
+    public Guid Id { get; set; } = default!;
     public string ChangedById { get; set; } = default!;
     public string Field { get; set; } = default!;
     public string OldValue { get; set; } = default!;
@@ -85,7 +87,7 @@ public class IssueHistory
 // Worklog Model (Time tracking)
 public class Worklog
 {
-    public string Id { get; set; } = default!;
+    public Guid Id { get; set; } = default!;
     public string UserId { get; set; } = default!;
     public int TimeSpentMinutes { get; set; }
     public string Description { get; set; } = default!;
