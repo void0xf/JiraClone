@@ -46,7 +46,7 @@ builder.Services.AddAuthentication(options =>
             ValidAudience = keycloakConfig["Audience"],
             ValidateLifetime = true,
             NameClaimType = ClaimTypes.Name, 
-            RoleClaimType = ClaimTypes.Role  // Usually 'realm_access.roles' or similar from Keycloak
+            RoleClaimType = ClaimTypes.Role 
         };
     });
 
@@ -63,8 +63,8 @@ app.MapCarter();
     app.UseSwagger();
     app.UseSwaggerUI();
 }*/
-app.UseAuthentication(); // Reads the token and creates the ClaimsPrincipal
-app.UseAuthorization();  // Enforces [Authorize] attributes (or Carter's equivalent)
+app.UseAuthentication(); 
+app.UseAuthorization(); 
 
 
 app.UseHttpsRedirection();
