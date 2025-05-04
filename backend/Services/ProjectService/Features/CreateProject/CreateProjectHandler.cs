@@ -1,4 +1,5 @@
-﻿using ProjectService.API.Models;
+﻿using System.Diagnostics;
+using ProjectService.API.Models;
 using SharedKernel;
 
 namespace ProjectService.API.Features.CreateProject;
@@ -29,9 +30,12 @@ public class CreateProjectHandler(IDocumentSession session) : IRequestHandler<Cr
         };
         try
         {
+            var sp = Stopwatch.StartNew();
+            sp.Start();
             session.Store(project);
             await session.SaveChangesAsync(cancellationToken);
-
+            sp.Stop();
+            Console.WriteLine($"Created project in {sp.ElapsedMilliseconds} ms");
         }
         catch (Exception e)
         {
