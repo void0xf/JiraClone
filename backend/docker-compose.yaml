@@ -3,7 +3,21 @@
     image: postgres
   issuedb:
     image: postgres
-  
+  userdb:
+    image: postgres
+  postgres-db: # Defines the service name for Keycloak's DB
+    image: postgres:14-alpine # Use the same or different version as needed
+  keycloak: # Defines the Keycloak service name
+    image: quay.io/keycloak/keycloak:latest # Or pin to a specific version e.g., 21.1.1
+
+
+networks:
+  my_network:
+    driver: bridge
+
+
 volumes:
   postgres_projectdb:
   postgres_issuedb:
+  postgres_userdb:
+  postgres_data:
