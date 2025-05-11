@@ -1,0 +1,47 @@
+<div class="relative w-[480px]">
+  <form
+    role="search"
+    (submit)="onSubmit($event)"
+    class="relative flex w-full items-center"
+    aria-label="Quick search"
+    novalidate
+  >
+    <div class="relative w-full">
+      <div
+        class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+        aria-hidden="true"
+      >
+        <ng-icon
+          name="lucideSearch"
+          class="h-4 w-4 text-muted-foreground"
+        ></ng-icon>
+      </div>
+
+      <input
+        hlmInput
+        id="quick-search-input"
+        type="search"
+        [formControl]="searchControl"
+        (focus)="onFocus()"
+        (blur)="onBlur()"
+        placeholder="Search"
+        class="h-9 w-full rounded-[3px] bg-[--background] pl-9 pr-12 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring"
+        aria-describedby="search-description"
+      />
+
+      <div
+        class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
+        aria-hidden="true"
+      >
+        <div
+          class="flex h-5 items-center rounded border border-border bg-muted px-1.5 text-[10px] font-medium text-muted-foreground"
+        >
+          <ng-icon name="lucideCommand" class="mr-1 h-3 w-3"></ng-icon>
+          K
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <p id="search-description" class="sr-only">Press / to open quick search</p>
+</div>
