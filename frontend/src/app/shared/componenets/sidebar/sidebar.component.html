@@ -1,0 +1,192 @@
+<aside
+  class="h-full bg-background text-gray-300 py-4 flex flex-col transition-all duration-200"
+  [class.w-0]="!isOpen()"
+  [class.w-64]="isOpen()"
+  [class.opacity-0]="!isOpen()"
+>
+  <nav class="flex flex-col gap-1 px-3 h-full">
+    <div class="flex flex-col gap-1 flex-grow">
+      <!-- Top section -->
+      <a
+        class="flex items-center gap-3 p-2 rounded-md hover:brightness-125 cursor-pointer relative"
+        (click)="selectMenuItem('for-you', SidebarItemType.MENU_ITEM)"
+        [class.bg-[#1C2B42]]="isMenuItemSelected('for-you')"
+        [class.text-[#669DF1]]="isMenuItemSelected('for-you')"
+      >
+        <div
+          class="w-1 h-5 rounded-lg bg-[#669DF1] absolute -inset-x-0.5"
+          *ngIf="isMenuItemSelected('for-you')"
+        ></div>
+        <ng-icon
+          hlm
+          name="lucideCircleUser"
+          [class.text-[#669DF1]]="isMenuItemSelected('for-you')"
+          class="text-foreground"
+        />
+        <span>For you</span>
+      </a>
+
+      <button
+        hlm
+        button
+        class="flex justify-between items-center gap-3 p-2 rounded-md hover:brightness-125 cursor-pointer relative"
+      >
+        <div class="flex items-center gap-3">
+          <ng-icon hlm name="lucideClock" class="text-gray-400" />
+          <span>Recent</span>
+        </div>
+        <ng-icon hlm name="lucideChevronRight" class="text-gray-400" />
+      </button>
+
+      <button
+        hlm
+        button
+        class="flex justify-between items-center gap-3 p-2 rounded-md hover:brightness-125 cursor-pointer relative"
+      >
+        <div class="flex items-center gap-3">
+          <ng-icon hlm name="lucideStar" class="text-gray-400" />
+          <span>Starred</span>
+        </div>
+        <ng-icon hlm name="lucideChevronRight" class="text-gray-400" />
+      </button>
+
+      <!-- Apps section -->
+      <app-list-tree
+        size="lg"
+        label="Apps"
+        defaultIcon="lucideGrid2x2Plus"
+        [startExpanded]="false"
+        (addAction)="handleAppsAdd($event)"
+        (moreActions)="handleAppsMore($event)"
+      >
+        <!-- Projected Content for Apps -->
+        <app-list-tree-item
+          label="Calendar"
+          icon="lucideCalendar"
+          [isActive]="activeItem === 'calendar'"
+          (itemClick)="handleItemClick('calendar')"
+        >
+        </app-list-tree-item>
+
+        <app-list-tree-item
+          label="Email"
+          icon="lucideMail"
+          [isActive]="activeItem === 'email'"
+          (itemClick)="handleItemClick('email')"
+        >
+        </app-list-tree-item>
+
+        <app-list-tree-item
+          label="View all apps"
+          icon="lucideLayoutList"
+          [isActive]="activeItem === 'view-all-apps'"
+          (itemClick)="handleItemClick('view-all-apps')"
+        >
+        </app-list-tree-item>
+      </app-list-tree>
+
+      <!-- Plans section -->
+      <app-list-tree
+        size="lg"
+        label="Plans"
+        defaultIcon="lucideLayers"
+        [startExpanded]="false"
+        (addAction)="handlePlansAdd($event)"
+        (moreActions)="handlePlansMore($event)"
+      >
+        <!-- Projected Content for Plans -->
+        <app-list-tree-item
+          label="Marketing Plan"
+          icon="lucideTarget"
+          [isActive]="activeItem === 'marketing-plan'"
+          (itemClick)="handleItemClick('marketing-plan')"
+        >
+        </app-list-tree-item>
+
+        <app-list-tree-item
+          label="Development Roadmap"
+          icon="lucideCodeXml"
+          [isActive]="activeItem === 'dev-roadmap'"
+          (itemClick)="handleItemClick('dev-roadmap')"
+        >
+        </app-list-tree-item>
+
+        <app-list-tree-item
+          label="View all plans"
+          icon="lucideLayoutList"
+          [isActive]="activeItem === 'view-all-plans'"
+          (itemClick)="handleItemClick('view-all-plans')"
+        >
+        </app-list-tree-item>
+      </app-list-tree>
+
+      <!-- Projects section -->
+      <app-list-tree
+        size="lg"
+        label="Projects"
+        defaultIcon="lucideRocket"
+        (startExpanded)="(true)"
+        (addAction)="handleProjectsAdd($event)"
+        (moreActions)="handleProjectsMore($event)"
+      >
+        <!-- Projected Content -->
+        <app-label name="Recent"></app-label>
+
+        <app-list-tree-item
+          label="Browser Temple Run Ga..."
+          icon="lucideCloudLightning"
+          [isActive]="activeItem === 'temple-run'"
+          (itemClick)="handleItemClick('temple-run')"
+          (addAction)="handleItemAdd('temple-run', $event)"
+        >
+          <!-- Optional item action -->
+        </app-list-tree-item>
+
+        <app-list-tree-item
+          label="Angular E-Commerce"
+          icon="lucideFolder"
+          [isActive]="activeItem === 'e-commerce'"
+          (itemClick)="handleItemClick('e-commerce')"
+        >
+        </app-list-tree-item>
+
+        <app-list-tree-item
+          label="My Portfolio Website"
+          icon="lucideFolder"
+          [isActive]="activeItem === 'portfolio'"
+          (itemClick)="handleItemClick('portfolio')"
+        >
+        </app-list-tree-item>
+
+        <app-list-tree-item
+          label="View all projects"
+          icon="lucideLayoutList"
+          [isActive]="activeItem === 'view-all'"
+          (itemClick)="handleItemClick('view-all')"
+        >
+        </app-list-tree-item>
+      </app-list-tree>
+    </div>
+
+    <!-- Footer section -->
+    <div class="mt-auto flex flex-col gap-2">
+      <!-- Customize sidebar button -->
+      <button
+        hlm
+        button
+        class="flex justify-between items-center gap-3 p-2 rounded-md hover:brightness-125 cursor-pointer relative mt-4"
+      >
+        <div class="flex items-center gap-3">
+          <ng-icon hlm name="lucideSettings2" class="text-gray-400" />
+          <span>Customize Sidebar</span>
+        </div>
+      </button>
+
+      <!-- Feedback component -->
+      <div class="p-2 mt-2 rounded-md bg-muted/20 flex items-center gap-2">
+        <ng-icon hlm name="lucideMegaphone" class="text-gray-400" />
+        <span class="text-sm">Give feedback on the new sidebar</span>
+      </div>
+    </div>
+  </nav>
+</aside>
