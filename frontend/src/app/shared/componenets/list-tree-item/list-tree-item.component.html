@@ -1,0 +1,55 @@
+<!-- Icon -->
+<span
+  class="mr-2 inline-flex flex-shrink-0 items-center justify-center"
+  [ngClass]="{
+    'h-4 w-4': size === 'sm',
+    'h-5 w-5': size === 'md',
+    'h-6 w-6': size === 'lg'
+  }"
+  aria-hidden="true"
+>
+  <ng-icon hlm [name]="icon" [size]="getIconSize()" />
+  <!-- Icon color inherits from host binding -->
+</span>
+
+<!-- Label -->
+<span class="flex-grow truncate">{{ label }}</span>
+
+<!-- Actions (Show on group hover) -->
+<div
+  class="ml-auto flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100"
+>
+  @if (addAction.observed) {
+  <button
+    hlmBtn
+    variant="ghost"
+    size="icon"
+    [class]="getActionButtonClasses()"
+    title="Add"
+    [attr.aria-label]="'Add to ' + label"
+    (click)="emitAdd($event)"
+  >
+    <ng-icon hlm name="lucidePlus" [size]="getIconSize()" />
+  </button>
+  } @if (moreActions.observed) {
+  <button
+    hlmBtn
+    variant="ghost"
+    size="icon"
+    [class]="getActionButtonClasses()"
+    title="More Actions"
+    [attr.aria-label]="'More actions for ' + label"
+    (click)="emitMore($event)"
+  >
+    <ng-icon hlm name="lucideMoreHorizontal" [size]="getIconSize()" />
+  </button>
+  }
+</div>
+
+<!-- Screen reader only description if needed -->
+<span class="sr-only">
+  {{ isActive ? "Selected item: " : "" }}{{ label }}
+</span>
+
+<!-- Optional: Add a visual indicator for active state if needed beyond background -->
+<!-- <span *ngIf="isActive" class="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 bg-primary"></span> -->

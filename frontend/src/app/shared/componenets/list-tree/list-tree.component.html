@@ -1,0 +1,112 @@
+<div>
+  <!-- Header - now with keyboard interaction and ARIA attributes -->
+  <div
+    [class]="getHeaderClasses()"
+    (click)="toggleExpand($event)"
+    (keydown)="onKeyDown($event)"
+    (mouseenter)="onHeaderEnter()"
+    (mouseleave)="onHeaderLeave()"
+    [attr.aria-expanded]="isExpanded()"
+    [attr.aria-controls]="treeId + '-content'"
+    role="treeitem"
+    tabindex="0"
+  >
+    <!-- Icon Area -->
+    <span
+      class="mr-3 inline-flex flex-shrink-0 items-center justify-center"
+      [ngClass]="{
+        'h-4 w-4': size === 'sm',
+        'h-5 w-5': size === 'md',
+        'h-6 w-6': size === 'lg'
+      }"
+      aria-hidden="true"
+    >
+      @if (isExpanded()) {
+      <ng-icon
+        hlm
+        name="lucideChevronDown"
+        class="text-foreground"
+        [size]="getIconSize()"
+      />
+      } @else { @if (isHovering()) {
+      <ng-icon
+        hlm
+        name="lucideChevronRight"
+        class="text-foreground"
+        [size]="getIconSize()"
+      />
+
+      } @else {
+      <!-- Use the dynamic defaultIcon input -->
+      <ng-icon
+        hlm
+        [name]="defaultIcon"
+        [size]="getIconSize()"
+        class="text-foreground"
+      />
+      } }
+    </span>
+
+    <!-- Label -->
+    <span class="flex-grow truncate font-medium text-foreground">{{
+      label
+    }}</span>
+
+    <!-- Actions (Show on group hover) - improved accessibility -->
+    <div
+      class="ml-auto flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100"
+    >
+      @if (addAction.observed) {
+      <!-- Only show if listener exists -->
+      <button
+        hlmBtn
+        variant="ghost"
+        size="icon"
+        [class]="getActionButtonClasses()"
+        title="Add"
+        [attr.aria-label]="'Add item to ' + label"
+        (click)="emitAdd($event)"
+      >
+        <ng-icon
+          hlm
+          name="lucidePlus"
+          [size]="getIconSize()"
+          class="text-foreground"
+        />
+      </button>
+      } @if (moreActions.observed) {
+      <!-- Only show if listener exists -->
+      <button
+        hlmBtn
+        variant="ghost"
+        size="icon"
+        [class]="getActionButtonClasses()"
+        title="More Actions"
+        [attr.aria-label]="'More actions for ' + label"
+        (click)="emitMore($event)"
+      >
+        <ng-icon
+          hlm
+          name="lucideEllipsis"
+          [size]="getIconSize()"
+          class="text-foreground"
+        />
+      </button>
+      }
+    </div>
+  </div>
+
+  <!-- Content Area (Conditionally Rendered) with ID for ARIA connection -->
+  @if (isExpanded()) {
+  <div
+    [class]="getContentClasses()"
+    [id]="treeId + '-content'"
+    role="group"
+    [attr.aria-label]="label + ' items'"
+  >
+    <!-- Indentation for children -->
+    <ng-content></ng-content>
+    <!-- Project user content here -->
+  </div>
+  }
+</div>
