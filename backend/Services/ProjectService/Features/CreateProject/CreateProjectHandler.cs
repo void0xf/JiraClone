@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Security.Claims;
 using ProjectService.API.Models;
 using SharedKernel;
 
@@ -12,10 +13,19 @@ public record CreateProjectCommand(
 
 public record CreateProjectResult(Guid ProjectId);
 
-public class CreateProjectHandler(IDocumentSession session) : IRequestHandler<CreateProjectCommand, Result<CreateProjectResult>>
+public class CreateProjectHandler(IDocumentSession _session, IHttpContextAccessor _httpContextAccessor) : IRequestHandler<CreateProjectCommand, Result<CreateProjectResult>>
 {
+
     public async Task<Result<CreateProjectResult>> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
+        var principal = _httpContextAccessor.HttpContext?.User;
+        var keycloakUserId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (keycloakUserId == null)
+        {
+            return Result<CreateProjectResult>.Failure(Error.Conflict(ErrorCode.Forbidden, "User is not authenticated.", 
+                "User is not authenticated"));
+        }
         var project = new Project
         {
             Id = Guid.NewGuid(),
@@ -24,7 +34,7 @@ public class CreateProjectHandler(IDocumentSession session) : IRequestHandler<Cr
             AccessLevel = request.AccessLevel,
             ProjectTemplate = request.ProjectTemplate,
             CreatedAt = DateTime.UtcNow,
-            LeadId = Guid.Empty,//empty due to lack of authorization at this point
+            LeadId = Guid.Parse(keycloakUserId),
             Members = new List<Guid>(),
             UpdatedAt = DateTime.UtcNow
         };
@@ -32,8 +42,8 @@ public class CreateProjectHandler(IDocumentSession session) : IRequestHandler<Cr
         {
             var sp = Stopwatch.StartNew();
             sp.Start();
-            session.Store(project);
-            await session.SaveChangesAsync(cancellationToken);
+            _session.Store(project);
+            await _session.SaveChangesAsync(cancellationToken);
             sp.Stop();
             Console.WriteLine($"Created project in {sp.ElapsedMilliseconds} ms");
         }
