@@ -19,6 +19,7 @@ if (string.IsNullOrEmpty(connectionString))
     throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 }
 builder.Services.AddCarter();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddDbContext<UserDbContext>(options =>
     options.UseNpgsql(connectionString)
@@ -51,8 +52,6 @@ builder.Services.AddAuthentication(options =>
     });
 
 builder.Services.AddAuthorization();
-
-builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

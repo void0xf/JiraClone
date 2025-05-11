@@ -15,6 +15,7 @@
     <ItemGroup>
       <PackageReference Include="Carter" Version="8.2.1" />
       <PackageReference Include="Marten" Version="7.39.5" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.15" />
     </ItemGroup>
 
     <ItemGroup>

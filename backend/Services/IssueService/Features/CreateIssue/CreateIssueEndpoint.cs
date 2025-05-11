@@ -24,7 +24,6 @@ public class CreateIssueEndpoint : CarterModule
                 request.Status,
                 request.Priority,
                 request.AssigneeId,
-                request.ReporterId,
                 request.SprintId,
                 request.Labels?.Select(l => new Label { Name = l.Name }).ToList(),
                 request.EstimatedStoryPoints,

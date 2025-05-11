@@ -12,6 +12,10 @@ public class DeleteIssueHandler(IIssueRepository issueRepository) : IRequestHand
 {
     public async Task<Result<DeleteIssueResult>> Handle(DeleteIssueCommand request, CancellationToken cancellationToken)
     {
+        var issue = await issueRepository.GetIssueById(request.IssueId, cancellationToken);
+        if (issue == null)
+            return Result<DeleteIssueResult>.Failure(Error.NotFound(ErrorCode.NotFound, "Issue Not Found","Issue Not Found" ));
+        
         var result = await issueRepository.DeleteIssue(request.IssueId, cancellationToken);
         
         if (result.IsFailure)

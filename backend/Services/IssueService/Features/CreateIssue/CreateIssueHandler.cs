@@ -1,4 +1,5 @@
-﻿using Issues.API.Data;
+﻿using System.Security.Claims;
+using Issues.API.Data;
 using Issues.API.Models;
 using Marten;
 using MediatR;
@@ -16,7 +17,6 @@ public record CreateIssueCommand(
     IssueStatus Status,
     IssuePriority Priority,
     string? AssigneeId,
-    string ReporterId,
     string? SprintId,
     List<Label>? Labels,
     int? EstimatedStoryPoints,
@@ -27,10 +27,18 @@ public record CreateIssueCommand(
 
 public record CreateIssueResult(Guid IssueId, string Key);
 
-public class CreateIssueHandler(IIssueRepository issueRepository) : IRequestHandler<CreateIssueCommand, Result<CreateIssueResult>>
+public class CreateIssueHandler(IIssueRepository issueRepository, IHttpContextAccessor _httpContextAccessor) : IRequestHandler<CreateIssueCommand, Result<CreateIssueResult>>
 {
     public async Task<Result<CreateIssueResult>> Handle(CreateIssueCommand request, CancellationToken cancellationToken)
     {
+        var principal = _httpContextAccessor.HttpContext?.User;
+        var keycloakUserId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (keycloakUserId == null)
+        {
+            return Result<CreateIssueResult>.Failure(Error.Conflict(ErrorCode.Forbidden, "User is not authenticated.", 
+                "User is not authenticated"));
+        }
         var issue = new Issue
         {
             Id = Guid.NewGuid(),
@@ -43,7 +51,7 @@ public class CreateIssueHandler(IIssueRepository issueRepository) : IRequestHand
             Status = request.Status,
             Priority = request.Priority,
             AssigneeId = request.AssigneeId,
-            ReporterId = request.ReporterId,
+            ReporterId = keycloakUserId,
             SprintId = request.SprintId,
             Labels = request.Labels ?? new List<Label>(),
             EstimatedStoryPoints = request.EstimatedStoryPoints,
