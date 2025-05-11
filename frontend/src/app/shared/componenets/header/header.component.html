@@ -1,0 +1,132 @@
+<header class="w-full flex items-center justify-between bg-background">
+  <section class="ml-3 flex items-center justify-between gap-2 py-2">
+    <button
+      hlmBtn
+      size="icon"
+      (click)="toggleSidebar()"
+      [hlmTooltipTrigger]="'Toggle Sidebar'"
+      aria-describedby="Sidebar Toggle"
+    >
+      @if (isSidebarOpen()) {
+      <ng-icon hlm name="lucidePanelLeftClose" />
+      } @else {
+      <ng-icon hlm name="lucidePanelLeftOpen" />
+      }
+    </button>
+    <button
+      hlmBtn
+      size="icon"
+      [hlmTooltipTrigger]="'Apps'"
+      aria-describedby="Apps"
+    >
+      <ng-icon hlm name="lucideLayoutGrid" />
+    </button>
+    <div class="flex items-center gap-2">
+      <svg
+        fill="none"
+        height="32"
+        viewBox="0 0 32 32"
+        focusable="false"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fill="#357DE8"
+          d="M11.034 21.99h-2.22c-3.346 0-5.747-2.05-5.747-5.052h11.932c.619 0 1.019.44 1.019 1.062v12.007c-2.983 0-4.984-2.416-4.984-5.784zm5.893-5.967h-2.219c-3.347 0-5.748-2.013-5.748-5.015h11.933c.618 0 1.055.402 1.055 1.025V24.04c-2.983 0-5.02-2.416-5.02-5.784zm5.93-5.93h-2.219c-3.347 0-5.748-2.05-5.748-5.052h11.933c.618 0 1.018.439 1.018 1.025v12.007c-2.983 0-4.984-2.416-4.984-5.784z"
+        ></path>
+      </svg>
+      <p class="text-xl font-bold text-white hidden xl:block">Jira</p>
+    </div>
+
+    <button
+      hlmBtn
+      size="icon"
+      class="lg:hidden"
+      [hlmTooltipTrigger]="'Search'"
+      aria-describedby="Search"
+    >
+      <ng-icon hlm name="lucideSearch" />
+    </button>
+  </section>
+
+  <section class="flex items-center gap-2">
+    <!-- Search bar for larger screens -->
+    <div class="hidden lg:flex">
+      <app-search></app-search>
+    </div>
+
+    <button
+      hlmBtn
+      size="default"
+      variant="secondary"
+      class="hidden xl:flex items-center justify-center gap-2"
+      [hlmTooltipTrigger]="'Create'"
+      aria-describedby="Create"
+    >
+      <ng-icon hlm name="lucidePlus" />
+      <p class="text-lg">Create</p>
+    </button>
+  </section>
+
+  <!-- Desktop view for action buttons -->
+  <section class="hidden lg:flex items-center gap-2 mr-3">
+    <button
+      hlmBtn
+      size="icon"
+      [hlmTooltipTrigger]="'Notifications'"
+      aria-describedby="Notifications"
+    >
+      <ng-icon hlm name="lucideBell" />
+    </button>
+    <button
+      hlmBtn
+      size="icon"
+      [hlmTooltipTrigger]="'Help'"
+      aria-describedby="Help"
+    >
+      <ng-icon hlm name="lucideCircleHelp" />
+    </button>
+    <button
+      hlmBtn
+      size="icon"
+      [hlmTooltipTrigger]="'Settings'"
+      aria-describedby="Settings"
+    >
+      <ng-icon hlm name="lucideSettings" />
+    </button>
+    <button
+      hlmBtn
+      size="icon"
+      variant="ghost"
+      class="bg-green-600 text-white rounded-full"
+      [hlmTooltipTrigger]="'Your Profile'"
+      aria-describedby="Your Profile"
+    >
+      RN
+    </button>
+  </section>
+
+  <!-- Mobile view with menu button -->
+  <section class="flex items-center gap-2 lg:hidden mr-3">
+    <button
+      hlmBtn
+      size="default"
+      variant="secondary"
+      class="flex items-center justify-center gap-2"
+      [hlmTooltipTrigger]="'Create'"
+      aria-describedby="Create"
+    >
+      <ng-icon hlm name="lucidePlus" />
+      <p class="text-lg">Create</p>
+    </button>
+
+    <button
+      hlmBtn
+      size="icon"
+      [hlmTooltipTrigger]="'More options'"
+      aria-describedby="More options"
+    >
+      <ng-icon hlm name="lucideEllipsis" />
+    </button>
+  </section>
+</header>
