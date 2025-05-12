@@ -1,0 +1,20 @@
+<button
+  hlmBtn
+  (click)="handleProjectNavigation()"
+  variant="ghost"
+  size="icon"
+  title="Add"
+  [attr.aria-label]="'Navigate to ' + name"
+  class="flex gap-2 items-center border-b-4 hover:text-blue-400 hover:border-b-blue-400 hover:border-b-4"
+>
+  @if (name) {
+  <ng-icon
+    hlm
+    [name]="lucideIconName === null ? undefined : lucideIconName"
+    size="24px"
+  ></ng-icon>
+  }
+  <p class="text-lg font-semibold">
+    {{ name }}
+  </p>
+</button>
