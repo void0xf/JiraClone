@@ -1,0 +1,10 @@
+<nav class="">
+  <ul class="flex gap-4 border-b-2 border-stone-500">
+    @for (entry of categoryEntries; track trackCategoryEntry($index, entry)) {
+    <li>
+      <app-project-navbar-item [name]="entry[0]" [lucideIconName]="entry[1]">
+      </app-project-navbar-item>
+    </li>
+    }
+  </ul>
+</nav>
