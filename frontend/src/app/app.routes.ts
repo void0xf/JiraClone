@@ -6,7 +6,7 @@ export const routes: Routes = [
     path: 'jira/software/projects',
     // Lazy load the module responsible for handling project-related views
     loadChildren: () =>
-      import('./features/project-managment/project-routing.module').then(
+      import('./core/layout/project-layout/project-routing.module').then(
         (m) => m.ProjectRoutingModule
       ),
   },
