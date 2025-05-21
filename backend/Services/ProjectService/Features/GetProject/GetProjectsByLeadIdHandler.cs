@@ -16,7 +16,11 @@ public class GetProjectsByLeadIdHandler(IDocumentSession session,IHttpContextAcc
     {
         var principal = _httpContextAccessor.HttpContext?.User;
         var keycloakUserId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
-
+        if (keycloakUserId == null)
+        {
+            return Result<GetProjectsByLeadIdQueryResult>.Failure(Error.Conflict(ErrorCode.Forbidden, "User is not authenticated.", 
+                "User is not authenticated"));
+        }
         
         var projects = await session.Query<Project>()
             .Where(p => p.LeadId == Guid.Parse(keycloakUserId))
