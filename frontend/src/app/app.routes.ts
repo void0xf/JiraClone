@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { SignInComponent } from './features/auth/sign-in/sign-in.component';
 
 export const routes: Routes = [
   {
@@ -9,5 +10,9 @@ export const routes: Routes = [
       import('./core/layout/project-layout/project-routing.module').then(
         (m) => m.ProjectRoutingModule
       ),
+  },
+  {
+    path: 'jira/software/sign-in',
+    component: SignInComponent,
   },
 ];
