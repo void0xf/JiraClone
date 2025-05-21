@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject, effect } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { HlmIconDirective } from '@spartan-ng/ui-icon-helm';
@@ -28,6 +28,10 @@ import {
 import { ListTreeComponent } from '../list-tree/list-tree.component';
 import { ListTreeItemComponent } from '../list-tree-item/list-tree-item.component';
 import { LabelComponent } from '../label/label.component';
+import { ProjectService } from '../../../core/services/project.service';
+import { Observable } from 'rxjs';
+import { Projects } from '../../../core/models/project.model';
+import { ApiResponse } from '../../../core/models/api-response.model';
 
 @Component({
   selector: 'app-sidebar',
@@ -72,12 +76,25 @@ import { LabelComponent } from '../label/label.component';
 export class SidebarComponent {
   SidebarItemType = SidebarItemType;
   activeItem: string | null = 'temple-run';
-
+  projectsData: Projects[] | null = null;
+  projectsIsLoading: boolean = true;
+  projectService = inject(ProjectService);
   constructor(
     private sidebarService: SidebarService,
     private selectionService: SidebarSelectionService
   ) {
     this.selectionService.selectItem('1', SidebarItemType.PROJECT);
+    effect(() => {
+      this.projectService.getProjects().subscribe({
+        next: (projects: Projects[]) => {
+          this.projectsData = projects;
+          this.projectsIsLoading = false;
+        },
+        error: (err) => {
+          console.log(err, 'sidbear');
+        },
+      });
+    });
   }
 
   get isOpen() {
