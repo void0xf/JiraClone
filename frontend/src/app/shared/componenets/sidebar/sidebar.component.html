@@ -65,6 +65,7 @@
           icon="lucideCalendar"
           [isActive]="activeItem === 'calendar'"
           (itemClick)="handleItemClick('calendar')"
+          size="lg"
         >
         </app-list-tree-item>
 
@@ -73,6 +74,7 @@
           icon="lucideMail"
           [isActive]="activeItem === 'email'"
           (itemClick)="handleItemClick('email')"
+          size="lg"
         >
         </app-list-tree-item>
 
@@ -81,6 +83,7 @@
           icon="lucideLayoutList"
           [isActive]="activeItem === 'view-all-apps'"
           (itemClick)="handleItemClick('view-all-apps')"
+          size="lg"
         >
         </app-list-tree-item>
       </app-list-tree>
@@ -100,6 +103,7 @@
           icon="lucideTarget"
           [isActive]="activeItem === 'marketing-plan'"
           (itemClick)="handleItemClick('marketing-plan')"
+          size="lg"
         >
         </app-list-tree-item>
 
@@ -108,6 +112,7 @@
           icon="lucideCodeXml"
           [isActive]="activeItem === 'dev-roadmap'"
           (itemClick)="handleItemClick('dev-roadmap')"
+          size="lg"
         >
         </app-list-tree-item>
 
@@ -116,6 +121,7 @@
           icon="lucideLayoutList"
           [isActive]="activeItem === 'view-all-plans'"
           (itemClick)="handleItemClick('view-all-plans')"
+          size="lg"
         >
         </app-list-tree-item>
       </app-list-tree>
@@ -132,39 +138,19 @@
         <!-- Projected Content -->
         <app-label name="Recent"></app-label>
 
+        @if (projectsData$) { @for (project of projectsData$ | async; track
+        $index) {
+
         <app-list-tree-item
-          label="Browser Temple Run Ga..."
+          [label]="project.name"
           icon="lucideCloudLightning"
-          [isActive]="activeItem === 'temple-run'"
-          (itemClick)="handleItemClick('temple-run')"
-          (addAction)="handleItemAdd('temple-run', $event)"
-        >
-          <!-- Optional item action -->
-        </app-list-tree-item>
-
-        <app-list-tree-item
-          label="Angular E-Commerce"
-          icon="lucideFolder"
-          [isActive]="activeItem === 'e-commerce'"
-          (itemClick)="handleItemClick('e-commerce')"
+          [isActive]="activeItem === project.name"
+          (itemClick)="handleProjectItemClick(project)"
+          (addAction)="handleItemAdd(project.name, $event)"
+          size="lg"
         >
         </app-list-tree-item>
-
-        <app-list-tree-item
-          label="My Portfolio Website"
-          icon="lucideFolder"
-          [isActive]="activeItem === 'portfolio'"
-          (itemClick)="handleItemClick('portfolio')"
-        >
-        </app-list-tree-item>
-
-        <app-list-tree-item
-          label="View all projects"
-          icon="lucideLayoutList"
-          [isActive]="activeItem === 'view-all'"
-          (itemClick)="handleItemClick('view-all')"
-        >
-        </app-list-tree-item>
+        } } @else { }
       </app-list-tree>
     </div>
 

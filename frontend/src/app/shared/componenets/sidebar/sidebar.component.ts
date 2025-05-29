@@ -1,5 +1,5 @@
-import { Component, inject, effect } from '@angular/core';
-import { NgIf } from '@angular/common';
+import { Component, inject, effect, OnInit } from '@angular/core';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { HlmIconDirective } from '@spartan-ng/ui-icon-helm';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -28,16 +28,20 @@ import {
 import { ListTreeComponent } from '../list-tree/list-tree.component';
 import { ListTreeItemComponent } from '../list-tree-item/list-tree-item.component';
 import { LabelComponent } from '../label/label.component';
-import { ProjectService } from '../../../core/services/project.service';
 import { Observable } from 'rxjs';
-import { Projects } from '../../../core/models/project.model';
-import { ApiResponse } from '../../../core/models/api-response.model';
+import { Project } from '../../../core/models/project.model';
+import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import * as ProjectSelectors from '../../../features/project-managment/store/project.selectors';
+import * as ProjectActions from '../../../features/project-managment/store/actions/project.actions';
+import { ProjectState } from '../../../features/project-managment/store/project.state';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   imports: [
     NgIf,
+    AsyncPipe,
     HlmButtonDirective,
     HlmIconDirective,
     NgIcon,
@@ -73,28 +77,30 @@ import { ApiResponse } from '../../../core/models/api-response.model';
     `,
   ],
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   SidebarItemType = SidebarItemType;
   activeItem: string | null = 'temple-run';
-  projectsData: Projects[] | null = null;
-  projectsIsLoading: boolean = true;
-  projectService = inject(ProjectService);
+
+  projectsData$: Observable<Project[]>;
+  projectsIsLoading$: Observable<boolean>;
+
+  private store = inject(Store<ProjectState>);
+
   constructor(
     private sidebarService: SidebarService,
-    private selectionService: SidebarSelectionService
+    private selectionService: SidebarSelectionService,
+    private router: Router
   ) {
     this.selectionService.selectItem('1', SidebarItemType.PROJECT);
-    effect(() => {
-      this.projectService.getProjects().subscribe({
-        next: (projects: Projects[]) => {
-          this.projectsData = projects;
-          this.projectsIsLoading = false;
-        },
-        error: (err) => {
-          console.log(err, 'sidbear');
-        },
-      });
-    });
+
+    this.projectsData$ = this.store.select(ProjectSelectors.selectAllProjects);
+    this.projectsIsLoading$ = this.store.select(
+      ProjectSelectors.selectProjectsLoading
+    );
+  }
+
+  ngOnInit(): void {
+    this.store.dispatch(ProjectActions.loadProjects());
   }
 
   get isOpen() {
@@ -102,6 +108,9 @@ export class SidebarComponent {
   }
 
   selectMenuItem(id: string, type: SidebarItemType): void {
+    if (id == 'for-you') {
+      this.router.navigate(['jira/your-work']);
+    }
     this.selectionService.selectItem(id, type);
   }
 
@@ -110,10 +119,17 @@ export class SidebarComponent {
   }
 
   handleItemClick(itemName: string): void {
-    console.log('Item clicked:', itemName);
     this.activeItem = itemName;
   }
-
+  handleProjectItemClick(project: Project): void {
+    this.activeItem = project.name;
+    this.store.dispatch(ProjectActions.selectProject({ projectId: project.id }));
+    this.router.navigate([
+      '/jira/software/projects',
+      project.projectKey,
+      'summary',
+    ]);
+  }
   handleProjectsAdd(event: MouseEvent): void {
     console.log('Add Project clicked');
   }
