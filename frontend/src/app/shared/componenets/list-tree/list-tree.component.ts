@@ -86,20 +86,7 @@ export class ListTreeComponent implements OnInit, AfterContentInit {
   }
 
   ngAfterContentInit(): void {
-    // Set up parent-child relationships for accessibility
-    // and propagate size to child items
-    if (this.treeItems) {
-      this.treeItems.forEach((item) => {
-        item.setSize(this.size);
-      });
-
-      // Listen for changes to the QueryList (new items added)
-      this.treeItems.changes.subscribe((items) => {
-        items.forEach((item: ListTreeItemComponent) => {
-          item.setSize(this.size);
-        });
-      });
-    }
+    // Logic for setting item.setSize has been removed
   }
 
   // Get CSS classes based on size

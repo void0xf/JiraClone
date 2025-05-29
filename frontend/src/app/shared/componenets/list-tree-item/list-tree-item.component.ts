@@ -55,11 +55,6 @@ export class ListTreeItemComponent implements OnInit {
       this.id || `item-${Math.random().toString(36).substring(2, 9)}`;
   }
 
-  // Method to set the size from parent
-  setSize(size: TreeSize): void {
-    this.size = size;
-  }
-
   // Get icon size based on component size
   getIconSize(): string {
     switch (this.size) {
