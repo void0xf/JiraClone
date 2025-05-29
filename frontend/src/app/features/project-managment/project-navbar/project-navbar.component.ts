@@ -34,6 +34,6 @@ export class ProjectNavbarComponent {
     index: number,
     entry: [string, keyof typeof lucideIcons]
   ): string {
-    return entry[index];
+    return entry[0];
   }
 }
