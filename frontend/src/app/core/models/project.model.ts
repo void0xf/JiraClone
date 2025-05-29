@@ -1,4 +1,4 @@
-export interface Projects {
+export interface Project {
   id: string; // Represents the Guid
   name: string;
   projectTemplate: ProjectTemplate;
