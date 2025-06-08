@@ -1,0 +1,53 @@
+<div cdkDrag [cdkDragData]="issue" class="bg-board-column-card-background p-3 rounded-md shadow-md mb-2.5 text-sm text-gray-300 cursor-pointer active:cursor-pointer hover:brightness-125"
+(mouseenter)="isHovering = true"
+(mouseleave)="isHovering = false"
+>
+  <!-- Top section: Title, Edit Icon, More Options -->
+  <div class="flex justify-between items-start mb-2">
+    <div class="flex items-start">
+      <p class="font-medium text-gray-100 mr-2">{{ name }}</p>
+      <button *ngIf="showMoreOptions && isHovering" class="text-gray-400 hover:text-gray-200">
+        <!-- Heroicon: pencil-square -->
+         <ng-icon name="lucideSquarePen" class="w-4 h-4"></ng-icon>
+      </button>
+    </div>
+    <button *ngIf="showMoreOptions && isHovering" class="text-gray-400 relative hover:text-gray-200 ">
+      <!-- Heroicon: ellipsis-horizontal -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 absolute right-0">
+        <path d="M3 10a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM8.5 10a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM14 10a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z" />
+      </svg>
+      
+    </button>
+
+  </div>
+
+  <!-- Bottom section: Task ID & Icon, Assignee -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <!-- Checkbox-like Task Type Icon (default) -->
+      <svg fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+        <path clip-rule="evenodd"
+              d="m1 3c0-1.10457.89543-2 2-2h10c1.1046 0 2 .89543 2 2v10c0 1.1046-.8954 2-2 2h-10c-1.10457 0-2-.8954-2-2zm2-.5c-.27614 0-.5.22386-.5.5v10c0 .2761.22386.5.5.5h10c.2761 0 .5-.2239.5-.5v-10c0-.27614-.2239-.5-.5-.5zm9.3262 2.98014-5.00003 5.99996c-.1425.171-.35359.2699-.57617.2699s-.43367-.0989-.57617-.2699l-2.5-2.99996 1.15234-.96028 1.92383 2.3086 4.4238-5.3086z"
+              fill="#4688ec" fill-rule="evenodd"/>
+    </svg>
+    
+      <!-- Custom Task Type Icon (if provided) -->
+      <!-- <img *ngIf="taskTypeIconUrl" [src]="taskTypeIconUrl" alt="Task type" class="w-4 h-4 mr-1.5 flex-shrink-0"/> -->
+      
+      <span class="text-xs text-gray-400 font-bold">{{ taskId }}</span>
+    </div>
+    
+    <div *ngIf="assigneeAvatarUrl; else noAssignee" class="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center overflow-hidden flex-shrink-0">
+      <img [src]="assigneeAvatarUrl" alt="Assignee" class="w-full h-full object-cover" />
+    </div>
+    <ng-template #noAssignee>
+      <div class="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0">
+        <!-- Heroicon: user-circle -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-gray-500">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-5.5-2.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM10 12a5.99 5.99 0 0 0-4.793 2.39A6.483 6.483 0 0 0 10 16.5a6.483 6.483 0 0 0 4.793-2.11A5.99 5.99 0 0 0 10 12Z" clip-rule="evenodd" />
+        </svg>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
