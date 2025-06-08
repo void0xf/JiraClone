@@ -1,0 +1,22 @@
+<ng-container >
+  <div class="flex p-4 bg-background min-h-screen text-white space-x-4" cdkDropListGroup>
+    <!-- Board Columns -->
+    <app-project-board-column 
+      *ngFor="let column of columns;"
+      [columnTitle]="column.title"
+      [items]="column.items"
+      (itemDropped)="drop($event)"
+      [isDoneColumn]="column.title === 'Done'">
+    </app-project-board-column>
+
+    <!-- <div class="flex-shrink-0">
+      <button class="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded-md flex items-center justify-center text-gray-400 hover:text-gray-200">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6">
+          <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+        </svg>
+      </button>
+    </div> -->
+  </div>
+</ng-container>
+
+

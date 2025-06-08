@@ -8,7 +8,7 @@ import {
   projectReducer,
 } from '../../../features/project-managment/store/project.reducer';
 import { ProjectEffects } from '../../../features/project-managment/store/project.effects';
-import { ProjectBoardComponent } from '../../../features/project-managment/project-board/project-board.component';
+import { ProjectBoardComponent } from '../../../features/project-managment/board/project-board/project-board.component';
 
 export const PROJECT_ROUTES: Routes = [
   {
