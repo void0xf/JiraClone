@@ -1,6 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { ProjectState, projectAdapter } from './project.state';
 import { projectFeatureKey } from './project.reducer'; // Corrected import for projectFeatureKey
+import { Project } from '../../../core/models/project.model';
 
 // Select the feature state
 export const selectProjectState =
@@ -34,6 +35,14 @@ export const selectSelectedProject = createSelector(
   (state: ProjectState) => state.selectedProject
 );
 
+export const selectProjectByKeyValue = (key: keyof Project) => 
+  createSelector(
+    selectAllProjects,
+    (projects: Project[], value: string ) => {
+      return projects.find(project => project[key] === value);
+    }
+  )
+export const selectProjectByProjectKey = selectProjectByKeyValue('projectKey'); 
 // Select loading status
 export const selectProjectsLoading = createSelector(
   selectProjectState,
