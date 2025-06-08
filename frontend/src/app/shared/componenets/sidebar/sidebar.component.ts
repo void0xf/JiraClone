@@ -1,4 +1,4 @@
-import { Component, inject, effect, OnInit } from '@angular/core';
+import { Component, inject, effect, OnInit, OnDestroy } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { HlmIconDirective } from '@spartan-ng/ui-icon-helm';
@@ -28,9 +28,9 @@ import {
 import { ListTreeComponent } from '../list-tree/list-tree.component';
 import { ListTreeItemComponent } from '../list-tree-item/list-tree-item.component';
 import { LabelComponent } from '../label/label.component';
-import { Observable } from 'rxjs';
+import { map, Observable, Subject, filter, switchMap, takeUntil } from 'rxjs';
 import { Project } from '../../../core/models/project.model';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import * as ProjectSelectors from '../../../features/project-managment/store/project.selectors';
 import * as ProjectActions from '../../../features/project-managment/store/actions/project.actions';
@@ -77,22 +77,25 @@ import { ProjectState } from '../../../features/project-managment/store/project.
     `,
   ],
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
   SidebarItemType = SidebarItemType;
   activeItem: string | null = 'temple-run';
 
   projectsData$: Observable<Project[]>;
+
   projectsIsLoading$: Observable<boolean>;
 
-  private store = inject(Store<ProjectState>);
+  private destroy$ = new Subject<void>();
+
+  // private store = inject(Store<ProjectState>);
 
   constructor(
     private sidebarService: SidebarService,
     private selectionService: SidebarSelectionService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
+    private store: Store<ProjectState>
   ) {
-    this.selectionService.selectItem('1', SidebarItemType.PROJECT);
-
     this.projectsData$ = this.store.select(ProjectSelectors.selectAllProjects);
     this.projectsIsLoading$ = this.store.select(
       ProjectSelectors.selectProjectsLoading
@@ -101,6 +104,32 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(ProjectActions.loadProjects());
+
+    this.route.paramMap
+      .pipe(
+        map((params) => params.get('project_key')),
+        filter((projectKey): projectKey is string => !!projectKey),
+        switchMap((projectKey) =>
+          this.store.select(
+            ProjectSelectors.selectProjectByProjectKey,
+            projectKey
+          )
+        ),
+        filter((project): project is Project => !!project),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((project) => {
+        this.store.dispatch(
+          ProjectActions.selectProject({ projectId: project.id })
+        );
+        this.selectionService.selectItem(project.id, SidebarItemType.PROJECT);
+        this.activeItem = project.name;
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   get isOpen() {
