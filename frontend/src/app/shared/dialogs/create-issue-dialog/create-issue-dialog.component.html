@@ -1,0 +1,63 @@
+<section class="bg-dialog-background text-gray-300 w-[800px] flex flex-col rounded-lg shadow-lg">
+  <header class="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0">
+    <h1 class="text-xl font-semibold">Create issue</h1>
+    <div class="flex items-center space-x-2">
+      <button class="p-1 rounded hover:bg-gray-700 focus:outline-none" aria-label="Minimize">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" /></svg>
+      </button>
+      <button class="p-1 rounded hover:bg-gray-700 focus:outline-none" aria-label="Fullscreen">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4h4m12 0h-4v4m0 8v4h4M4 16h4v4" /></svg>
+      </button>
+      <button (click)="close()" class="p-1 rounded hover:bg-gray-700 focus:outline-none" aria-label="Close">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="p-6 flex-grow overflow-y-auto">
+    <p class="text-sm mb-6">Required fields are marked with an asterisk <span class="text-red-500">*</span></p>
+
+    <form [formGroup]="createIssueForm" class="space-y-6">
+      <div>
+        <label for="project" class="block text-sm font-medium mb-1">Project <span class="text-red-500">*</span></label>
+        <app-dropdown formControlName="projectId" [groups]="(projectGroups$ | async) || []" placeholder="Select a project"></app-dropdown>
+      </div>
+      
+      <div>
+        <label for="issueType" class="block text-sm font-medium mb-1">Issue type <span class="text-red-500">*</span></label>
+        <app-dropdown formControlName="issueType" [options]="workTypes"></app-dropdown>
+      </div>
+
+      <div>
+        <label for="status" class="block text-sm font-medium mb-1">Status</label>
+        <app-dropdown formControlName="status" [options]="statusTypes"></app-dropdown>
+      </div>
+
+      <div>
+        <label for="summary" class="block text-sm font-medium mb-1">Summary <span class="text-red-500">*</span></label>
+        <input type="text" id="summary" formControlName="summary" class="block w-full bg-dialog-input-background border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" [ngClass]="{'border-red-500': createIssueForm.get('summary')?.invalid && createIssueForm.get('summary')?.touched}">
+        <div *ngIf="createIssueForm.get('summary')?.invalid && createIssueForm.get('summary')?.touched" class="text-red-500 text-sm mt-1 flex items-center">
+          <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+          Summary is required
+        </div>
+      </div>
+      
+      <div>
+        <label for="description" class="block text-sm font-medium mb-1">Description</label>
+        <textarea id="description" formControlName="description" rows="4" placeholder="Add a description..." class="block w-full bg-dialog-input-background border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+      </div>
+
+    </form>
+  </main>
+
+  <footer class="flex items-center justify-between p-4 border-t border-gray-700 flex-shrink-0">
+    <div class="flex items-center">
+      <input type="checkbox" id="createAnother" formControlName="createAnother" class="h-4 w-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500">
+      <label for="createAnother" class="ml-2 block text-sm">Create another issue</label>
+    </div>
+    <div class="flex items-center space-x-2">
+      <button (click)="close()" type="button" class="px-4 py-2 text-sm font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-blue-500">Cancel</button>
+      <button (click)="create()" type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-blue-500 disabled:opacity-50" [disabled]="createIssueForm.invalid">Create</button>
+    </div>
+  </footer>
+</section>
