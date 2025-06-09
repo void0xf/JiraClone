@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 // import { HlmSpinnerComponent } from-ng/ui-spinner-helm';
 import { HlmIconDirective } from '@spartan-ng/ui-icon-helm';
@@ -22,7 +22,8 @@ import {
   HlmTooltipComponent,
   HlmTooltipTriggerDirective,
 } from '@spartan-ng/ui-tooltip-helm';
-
+import {Dialog, DialogRef, DIALOG_DATA, DialogModule} from '@angular/cdk/dialog';
+import {CreateIssueDialogComponent} from '../../dialogs/create-issue-dialog/create-issue-dialog.component'
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -34,6 +35,7 @@ import {
     HlmTooltipComponent,
     HlmTooltipTriggerDirective,
     HlmButtonDirective,
+    DialogModule
   ],
   providers: [
     provideIcons({
@@ -55,12 +57,16 @@ import {
 })
 export class HeaderComponent {
   constructor(private sidebarService: SidebarService) {}
-
+  dialog = inject(Dialog);
   get isSidebarOpen() {
     return this.sidebarService.isOpen;
   }
 
   toggleSidebar(): void {
     this.sidebarService.toggle();
+  }
+  openCreateIssueDialog(): void{
+    this.dialog.open(CreateIssueDialogComponent)
+
   }
 }

@@ -62,6 +62,7 @@
       class="hidden xl:flex items-center justify-center gap-2"
       [hlmTooltipTrigger]="'Create'"
       aria-describedby="Create"
+      (click)="openCreateIssueDialog()"
     >
       <ng-icon hlm name="lucidePlus" />
       <p class="text-lg">Create</p>
