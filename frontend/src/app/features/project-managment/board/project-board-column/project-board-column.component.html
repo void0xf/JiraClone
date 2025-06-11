@@ -1,4 +1,4 @@
-<div class="flex-shrink-0 w-72 bg-board-column-background rounded-lg shadow-md mr-4">
+<div class="flex-shrink-0 w-72 bg-board-column-background rounded-lg shadow-md mr-4" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
   <div class="p-4 ">
     <div class="flex gap-2 items-center mb-1">
       <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">{{ columnTitle }}</h2>
@@ -33,6 +33,12 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
           </svg>
           <p class="text-sm">View done work items</p>
+      </div>
+    </ng-container>
+    <ng-container>
+      <div class="w-full">
+        <app-project-board-new-item-button *ngIf="!newItemButtonClicked && isHovering" (buttonClicked)="newItemButtonClick()"></app-project-board-new-item-button>
+        <app-project-board-new-item-text-area *ngIf="newItemButtonClicked" (focusLost)="focusLost()"></app-project-board-new-item-text-area>
       </div>
     </ng-container>
   </div>
