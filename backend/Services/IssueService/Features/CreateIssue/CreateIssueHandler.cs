@@ -27,9 +27,14 @@ public record CreateIssueCommand(
 
 public record CreateIssueResult(Guid IssueId, string Key);
 
-public class CreateIssueHandler(IIssueRepository issueRepository, IHttpContextAccessor _httpContextAccessor) : IRequestHandler<CreateIssueCommand, Result<CreateIssueResult>>
+public class CreateIssueHandler(
+    IIssueRepository issueRepository,
+    IHttpContextAccessor _httpContextAccessor) :
+    IRequestHandler<CreateIssueCommand, Result<CreateIssueResult>>
 {
-    public async Task<Result<CreateIssueResult>> Handle(CreateIssueCommand request, CancellationToken cancellationToken)
+    public async Task<Result<CreateIssueResult>> Handle(
+        CreateIssueCommand request,
+        CancellationToken cancellationToken)
     {
         var principal = _httpContextAccessor.HttpContext?.User;
         var keycloakUserId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
