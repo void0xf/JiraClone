@@ -7,7 +7,7 @@
       - POSTGRES_DB=ProjectDb
     restart: always
     ports:
-     - "5432:5432"
+     - "15432:5432"
     volumes:
      - postgres_projectdb:/var/lib/postgresql/data
   issuedb:
@@ -18,7 +18,7 @@
       - POSTGRES_DB=IssueDb
     restart: always
     ports:
-     - "5433:5432"
+     - "15433:5432"
     volumes:
      - postgres_issuedb:/var/lib/postgresql/data   
   userdb:
@@ -29,7 +29,7 @@
       - POSTGRES_DB=userdb
     restart: always
     ports:
-      - "5434:5432"
+      - "15434:5432"
     volumes:
       - postgres_userdb:/var/lib/postgresql/data
   
