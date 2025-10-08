@@ -1,0 +1,194 @@
+{
+  "info": {
+    "_postman_id": "b7c9e7a9-15c7-4d8b-9fa0-123456789abc",
+    "name": "JiraClone Backend APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for ProjectService (http://localhost:5000) and IssueService (http://localhost:5001). Uses Keycloak bearer auth."
+  },
+  "item": [
+    {
+      "name": "Environments",
+      "item": [
+        {
+          "name": "Set Env Vars (local)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('project_base', 'http://localhost:5000');",
+                  "pm.collectionVariables.set('issue_base', 'http://localhost:5001/api/v1');",
+                  "pm.collectionVariables.set('bearer', '');",
+                  "pm.collectionVariables.set('last_project_id', '');",
+                  "pm.collectionVariables.set('last_issue_id', '');",
+                  "pm.collectionVariables.set('last_issue_key', '');",
+                  "pm.collectionVariables.set('project_key', 'PRJ');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{project_base}}",
+              "host": [
+                "{{project_base}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ProjectService (http://localhost:5000)",
+      "item": [
+        {
+          "name": "Create Project",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{bearer}}"}
+            ],
+            "url": {"raw": "{{project_base}}/projects", "host": ["{{project_base}}"], "path": ["projects"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Demo Project\",\n  \"projectTemplate\": \"Scrum\",\n  \"projectKey\": \"{{project_key}}\",\n  \"accessLevel\": \"Public\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('created', function(){ pm.expect(pm.response.code).to.be.oneOf([201,200]); });",
+                  "if(json && json.data && json.data.projectId){ pm.collectionVariables.set('last_project_id', json.data.projectId); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Projects (by lead)",
+          "request": {
+            "method": "GET",
+            "header": [ {"key": "Authorization", "value": "Bearer {{bearer}}"} ],
+            "url": {"raw": "{{project_base}}/projects", "host": ["{{project_base}}"], "path": ["projects"]}
+          }
+        },
+        {
+          "name": "Update Project",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{bearer}}"}
+            ],
+            "url": {"raw": "{{project_base}}/projects/{{last_project_id}}", "host": ["{{project_base}}"], "path": ["projects","{{last_project_id}}"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Demo Project Updated\",\n  \"projectTemplate\": \"Kanban\",\n  \"projectKey\": \"{{project_key}}\",\n  \"accessLevel\": \"Private\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Project",
+          "request": {
+            "method": "DELETE",
+            "header": [ {"key": "Authorization", "value": "Bearer {{bearer}}"} ],
+            "url": {"raw": "{{project_base}}/projects/{{last_project_id}}", "host": ["{{project_base}}"], "path": ["projects","{{last_project_id}}"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "IssueService (http://localhost:5001/api/v1)",
+      "item": [
+        {
+          "name": "Create Issue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{bearer}}"}
+            ],
+            "url": {"raw": "{{issue_base}}/issue", "host": ["{{issue_base}}"], "path": ["issue"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"{{project_key}}-1\",\n  \"projectId\": \"{{last_project_id}}\",\n  \"issueType\": \"Task\",\n  \"parentIssueId\": null,\n  \"summary\": \"First task\",\n  \"description\": \"Details...\",\n  \"status\": \"ToDo\",\n  \"priority\": \"Medium\",\n  \"assigneeId\": null,\n  \"reporterId\": \"user-1\",\n  \"sprintId\": null,\n  \"labels\": [{ \"name\": \"frontend\" }],\n  \"estimatedStoryPoints\": 3,\n  \"isArchived\": false,\n  \"inBacklog\": true,\n  \"dueDate\": null\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('created', function(){ pm.expect(pm.response.code).to.be.oneOf([201,200]); });",
+                  "if(json && json.data){ pm.collectionVariables.set('last_issue_id', json.data.issueId); pm.collectionVariables.set('last_issue_key', json.data.key); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Issue By Id",
+          "request": {
+            "method": "GET",
+            "header": [ {"key": "Authorization", "value": "Bearer {{bearer}}"} ],
+            "url": {"raw": "{{issue_base}}/issue/{{last_issue_id}}", "host": ["{{issue_base}}"], "path": ["issue","{{last_issue_id}}"]}
+          }
+        },
+        {
+          "name": "Get Issues By Project Id",
+          "request": {
+            "method": "GET",
+            "header": [ {"key": "Authorization", "value": "Bearer {{bearer}}"} ],
+            "url": {"raw": "{{issue_base}}/issue/project/{{last_project_id}}", "host": ["{{issue_base}}"], "path": ["issue","project","{{last_project_id}}"]}
+          }
+        },
+        {
+          "name": "Update Issue",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{bearer}}"}
+            ],
+            "url": {"raw": "{{issue_base}}/issue/{{last_issue_id}}", "host": ["{{issue_base}}"], "path": ["issue","{{last_issue_id}}"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"summary\": \"First task (updated)\",\n  \"status\": \"InProgress\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Issue",
+          "request": {
+            "method": "DELETE",
+            "header": [ {"key": "Authorization", "value": "Bearer {{bearer}}"} ],
+            "url": {"raw": "{{issue_base}}/issue/{{last_issue_id}}", "host": ["{{issue_base}}"], "path": ["issue","{{last_issue_id}}"]}
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Attach bearer token if present",
+          "if(pm.collectionVariables.get('bearer')){",
+          "  pm.request.headers.add({ key: 'Authorization', value: 'Bearer ' + pm.collectionVariables.get('bearer') });",
+          "}"
+        ]
+      }
+    }
+  ]
+}
