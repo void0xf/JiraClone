@@ -3,7 +3,7 @@
     "_postman_id": "b7c9e7a9-15c7-4d8b-9fa0-123456789abc",
     "name": "JiraClone Backend APIs",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Postman collection for ProjectService (http://localhost:5000) and IssueService (http://localhost:5001). Uses Keycloak bearer auth."
+    "description": "Postman collection for userservice,  ProjectService (http://localhost:5000) and IssueService (http://localhost:5001). Uses Keycloak bearer auth."
   },
   "item": [
     {
