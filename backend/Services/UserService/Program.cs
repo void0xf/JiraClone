@@ -3,7 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using UserService.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims; // For ClaimTypes
+using System.Security.Claims;
+using UserService.Infrastructure.Keycloak; // For ClaimTypes
 
 
 var assembly = typeof(Program).Assembly;
@@ -20,10 +21,14 @@ if (string.IsNullOrEmpty(connectionString))
 }
 builder.Services.AddCarter();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
+builder.Services.AddTransient<IKeycloakAdminService, KeycloakAdminService>();
 
 builder.Services.AddDbContext<UserDbContext>(options =>
     options.UseNpgsql(connectionString)
 );
+
+
 
 builder.Services.AddMediatR(options =>
 {
@@ -53,6 +58,12 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddHttpClient();
+builder.Services.AddTransient<IKeycloakAdminService, KeycloakAdminService>();
+
+builder.Configuration.AddUserSecrets<Program>();
+var apiKey = builder.Configuration["Keycloak:AdminClientSecret"];
+
 var app = builder.Build();
 
 app.MapCarter();
@@ -68,4 +79,6 @@ app.UseAuthorization();
 
 app.UseHttpsRedirection();
 
+
 app.Run();
+
