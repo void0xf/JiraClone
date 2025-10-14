@@ -1,90 +1,77 @@
 ﻿using MediatR;
-using SharedKernel;
-using UserService.Features.CreateUser.DTO;
-using UserService.Infrastructure;
-using UserService.Models;
 using System;
-using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
-
+using SharedKernel;
+using UserService.Infrastructure;
+using UserService.Infrastructure.Keycloak;
+using UserService.Models;
 
 namespace UserService.Features.CreateUser;
-using Microsoft.AspNetCore.Http;
 
-public record CreateUserCommand() : IRequest<Result<Guid>>;
+public record CreateUserCommand(string Email) : IRequest<Result<Guid>>;
 
-    
 public class CreateUserHandler : IRequestHandler<CreateUserCommand, Result<Guid>>
 {
     private readonly UserDbContext _userDbContext;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IKeycloakAdminService _keycloakAdminService;
 
-    public CreateUserHandler(UserDbContext userDbContext, IHttpContextAccessor httpContextAccessor)
+    public CreateUserHandler(UserDbContext userDbContext, IKeycloakAdminService keycloakAdminService)
     {
         _userDbContext = userDbContext ?? throw new ArgumentNullException(nameof(userDbContext));
-        _httpContextAccessor = httpContextAccessor;
+        _keycloakAdminService = keycloakAdminService ?? throw new ArgumentNullException(nameof(keycloakAdminService));
     }
-    
+
     public async Task<Result<Guid>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         try
         {
-            
-            var principal = _httpContextAccessor.HttpContext?.User;
-            if(principal == null)
-                return Result<Guid>.Failure(Error.Conflict(ErrorCode.Forbidden, "User is not authenticated.", 
-                    "User is not authenticated"));
- 
-            
-            var keycloakUserId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
-            var email = principal.FindFirstValue(ClaimTypes.Email);
-            var firstName = principal.FindFirstValue(ClaimTypes.GivenName);
-            var lastName = principal.FindFirstValue(ClaimTypes.Surname);
+            if (string.IsNullOrWhiteSpace(request.Email))
+            {
+                return Result<Guid>.Failure(Error.Validation(ErrorCode.ValidationFailed, "Email is required.",
+                    "Email is required"));
+            }
+
+            var email = request.Email.Trim().ToLowerInvariant();
 
             var existingUser = await _userDbContext.Users.AsNoTracking()
-                .FirstOrDefaultAsync(u => u.KeycloakUserId == keycloakUserId);
+                .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
 
             if (existingUser != null)
             {
-                return Result<Guid>.Failure(Error.Conflict(ErrorCode.Conflict, 
+                return Result<Guid>.Failure(Error.Conflict(ErrorCode.UserAlreadyExists,
                     $"User already exists with {existingUser.Id}.", "User already exists"));
             }
-            
-            var userId = Guid.NewGuid();
-            var user = new User()
+
+            var keycloakResult = await _keycloakAdminService.CreateUserAsync(email);
+            if (keycloakResult.IsFailure)
             {
-                Id = userId,
-                KeycloakUserId = keycloakUserId,
+                return Result<Guid>.Failure(keycloakResult.Error!);
+            }
+
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                KeycloakUserId = keycloakResult.Value,
                 Email = email,
-                FullName = new PrivacySetting
-                {
-                    Value = firstName,
-                    WhoCanSee = PrivacyLevel.Public
-                },
-                PublicName = new PrivacySetting
-                {
-                    Value = lastName,
-                    WhoCanSee = PrivacyLevel.Public
-                },
-                WorkedOn = new List<Guid>(),
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
-            
+
             _userDbContext.Users.Add(user);
             var result = await _userDbContext.SaveChangesAsync(cancellationToken);
-            if(result <= 0)
+            if (result <= 0)
             {
-                return Result<Guid>.Failure(Error.Unexpected(ErrorCode.UnknownError, 
-                    "An error occurred while processing your request", null, null ));
+                return Result<Guid>.Failure(Error.Unexpected(ErrorCode.UnknownError,
+                    "An error occurred while processing your request", null, null));
             }
-            
+
             return Result<Guid>.Success(user.Id);
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return Result<Guid>.Failure(Error.Unexpected(ErrorCode.UnknownError, 
-                "An error occurred while processing your request", null, null ));        }
+            return Result<Guid>.Failure(Error.Unexpected(ErrorCode.UnknownError,
+                "An error occurred while processing your request", null, null));
+        }
     }
 }

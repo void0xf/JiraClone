@@ -1,20 +1,18 @@
-﻿using System;
+using System;
 using Carter;
 using MediatR;
 using SharedKernel;
-using UserService.Features.CreateUser.DTO;
+using UserService.Features.CreateUserProfile.DTO;
 
-namespace UserService.Features.CreateUser;
+namespace UserService.Features.CreateUserProfile;
 
-public class CreateUserEndpoint : CarterModule
+public class CreateUserProfileEndpoint : CarterModule
 {
-    public CreateUserEndpoint() : base("api/v1")
-    {
-    }
-
+    public CreateUserProfileEndpoint() : base("api/v1") => RequireAuthorization();
+    
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/user", async (CreateUserRequest request, ISender sender) =>
+        app.MapPost("/user/profile", async (CreateUserProfileRequest request, ISender sender) =>
         {
             if (request is null)
             {
@@ -23,15 +21,13 @@ public class CreateUserEndpoint : CarterModule
                 return failure.ToApiResponse().ToCreatedResult($"/user/{Guid.Empty}");
             }
 
-            var result = await sender.Send(new CreateUserCommand(request.Email));
+            var result = await sender.Send(new CreateUserProfileCommand(request));
             if (!result.IsSuccess)
             {
                 return result.ToApiResponse().ToCreatedResult($"/user/{Guid.Empty}");
             }
 
             return result.ToApiResponse().ToCreatedResult($"/user/{result.Value}");
-
-
         });
     }
 }
