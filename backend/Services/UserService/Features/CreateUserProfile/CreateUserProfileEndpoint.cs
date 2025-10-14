@@ -8,10 +8,8 @@ namespace UserService.Features.CreateUserProfile;
 
 public class CreateUserProfileEndpoint : CarterModule
 {
-    public CreateUserProfileEndpoint() : base("api/v1")
-    {
-    }
-
+    public CreateUserProfileEndpoint() : base("api/v1") => RequireAuthorization();
+    
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPost("/user/profile", async (CreateUserProfileRequest request, ISender sender) =>
