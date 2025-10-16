@@ -485,6 +485,10 @@
         "default-roles-jira-clone"
       ],
       "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "view-users"
+        ],
         "jira-clone-backend": [
           "view-users"
         ],
