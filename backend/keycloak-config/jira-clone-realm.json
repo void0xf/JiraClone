@@ -1788,7 +1788,22 @@
     "contentSecurityPolicy": "frame-ancestors 'self' http://localhost:64620 http://localhost:4200",
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
-  "smtpServer": {},
+  "smtpServer": {
+    "debug": "false",
+    "replyToDisplayName": "",
+    "starttls": "true",
+    "auth": "true",
+    "envelopeFrom": "",
+    "ssl": "false",
+    "password": "**********",
+    "port": "587",
+    "host": "smtp.gmail.com",
+    "replyTo": "",
+    "from": "vert3nn@gmail.com",
+    "fromDisplayName": "Jira Clone",
+    "authType": "basic",
+    "user": "vert3nn@gmail.com"
+  },
   "eventsEnabled": false,
   "eventsListeners": [
     "jboss-logging"
