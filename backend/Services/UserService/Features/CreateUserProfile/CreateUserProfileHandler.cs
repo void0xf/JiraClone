@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -14,55 +15,55 @@ public record CreateUserProfileCommand(CreateUserProfileRequest Request) : IRequ
 public class CreateUserProfileHandler : IRequestHandler<CreateUserProfileCommand, Result<Guid>>
 {
     private readonly UserDbContext _userDbContext;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public CreateUserProfileHandler(UserDbContext userDbContext)
+
+    public CreateUserProfileHandler(UserDbContext userDbContext, IHttpContextAccessor httpContextAccessor)
     {
         _userDbContext = userDbContext ?? throw new ArgumentNullException(nameof(userDbContext));
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<Result<Guid>> Handle(CreateUserProfileCommand request, CancellationToken cancellationToken)
     {
         try
         {
+            var principal = _httpContextAccessor.HttpContext?.User;
+            var keycloakUserId = principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+            if(keycloakUserId == null) 
+            {
+                return Result<Guid>.Failure(Error.Unauthorized(ErrorCode.Unauthorized,
+                    "User is not authenticated or token is invalid.",
+                    "Authentication required"));
+            }
             if (request.Request is null)
             {
-                return Result<Guid>.Failure(Error.Validation(ErrorCode.ValidationFailed, "Request payload is required.",
+                return Result<Guid>.Failure(Error.Validation(ErrorCode.ValidationFailed,
+                    "Request payload is required.",
                     "Request payload is required"));
             }
 
-            if (string.IsNullOrWhiteSpace(request.Request.Email))
-            {
-                return Result<Guid>.Failure(Error.Validation(ErrorCode.ValidationFailed, "Email is required.",
-                    "Email is required"));
-            }
-
-            var email = request.Request.Email.Trim().ToLowerInvariant();
-
             if (request.Request.FullName is null || string.IsNullOrWhiteSpace(request.Request.FullName))
             {
-                return Result<Guid>.Failure(Error.Validation(ErrorCode.ValidationFailed, "Full name is required.",
+                return Result<Guid>.Failure(Error.Validation(ErrorCode.ValidationFailed,
+                    "Full name is required.",
                     "Full name is required"));
             }
 
             if (request.Request.PublicName is null || string.IsNullOrWhiteSpace(request.Request.PublicName))
             {
-                return Result<Guid>.Failure(Error.Validation(ErrorCode.ValidationFailed, "Public name is required.",
+                return Result<Guid>.Failure(Error.Validation(ErrorCode.ValidationFailed,
+                    "Public name is required.",
                     "Public name is required"));
             }
 
             var user = await _userDbContext.Users
-                .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+                .FirstOrDefaultAsync(u => u.KeycloakUserId == keycloakUserId, cancellationToken);
 
             if (user == null)
             {
-                return Result<Guid>.Failure(Error.NotFound(ErrorCode.UserNotFound,
-                    $"User with email {email} does not exist", "User does not exist"));
-            }
-
-            if (user.FullName != null || user.PublicName != null)
-            {
-                return Result<Guid>.Failure(Error.Conflict(ErrorCode.UserAlreadyExists,
-                    $"Profile already exists for user {user.Id}", "Profile already exists"));
+                return Result<Guid>.Failure(Error.Unauthorized(ErrorCode.UserNotFound,
+                    $"User dont exists", "User dont exists"));
             }
 
             user.FullName = new PrivacySetting
@@ -76,7 +77,7 @@ public class CreateUserProfileHandler : IRequestHandler<CreateUserProfileCommand
                 Value = request.Request.PublicName,
                 WhoCanSee = PrivacyLevel.Public
             };
-
+            user.KeycloakUserId = keycloakUserId;
             user.HeaderImageUrl = String.Empty;
             user.ProfilePictureUrl = String.Empty;
             user.WorkedOn = new List<Guid>();
