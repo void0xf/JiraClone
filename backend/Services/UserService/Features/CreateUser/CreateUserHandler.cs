@@ -47,7 +47,7 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand, Result<Guid>
             {
                 return Result<Guid>.Failure(keycloakResult.Error!);
             }
-
+            
             var user = new User
             {
                 Id = Guid.NewGuid(),
