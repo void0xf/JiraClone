@@ -23,6 +23,7 @@ builder.Services.AddCarter();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 builder.Services.AddTransient<IKeycloakAdminService, KeycloakAdminService>();
+builder.Services.AddSingleton<IVerificationCodeService, InMemoryVerificationCodeService>();
 
 builder.Services.AddDbContext<UserDbContext>(options =>
     options.UseNpgsql(connectionString)
@@ -64,15 +65,27 @@ builder.Services.AddTransient<IKeycloakAdminService, KeycloakAdminService>();
 builder.Configuration.AddUserSecrets<Program>();
 var apiKey = builder.Configuration["Keycloak:AdminClientSecret"];
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalAngular",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200") 
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials(); 
+        });
+});
+
+
 var app = builder.Build();
 
 app.MapCarter();
 
-/*if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}*/
+    app.UseCors("AllowLocalAngular");
+}
 app.UseAuthentication(); 
 app.UseAuthorization(); 
 
