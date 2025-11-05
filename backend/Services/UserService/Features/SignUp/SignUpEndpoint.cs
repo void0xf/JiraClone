@@ -18,18 +18,13 @@ public class SignUpEndpoint : CarterModule
         {
             if (request is null)
             {
-                var failure = Result<Guid>.Failure(Error.Validation(ErrorCode.ValidationFailed,
+                var failure = Result<CreateUserResponse>.Failure(Error.Validation(ErrorCode.ValidationFailed,
                     "Request payload is required.", "Request payload is required"));
-                return failure.ToApiResponse().ToCreatedResult($"/user/{Guid.Empty}");
+                return failure.ToApiResponse().ToMinimalApiResult();
             }
 
             var result = await sender.Send(new SignUpCommand(request.Email));
-            if (!result.IsSuccess)
-            {
-                return result.ToApiResponse().ToCreatedResult($"/user/{Guid.Empty}");
-            }
-
-            return result.ToApiResponse().ToCreatedResult($"/user/{result.Value}");
+            return result.ToApiResponse().ToMinimalApiResult();
         }).AllowAnonymous();
     }
 }
