@@ -59,6 +59,7 @@ export const appConfig: ApplicationConfig = {
           sessionTimeout: 60000,
         }),
       ],
+      
       providers: [AutoRefreshTokenService, UserActivityService],
     }),
     provideHttpClient(withInterceptors([customBearerTokenInterceptor])),
