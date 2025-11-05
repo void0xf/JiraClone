@@ -1,51 +1,34 @@
-import { Component, effect, inject, signal } from '@angular/core';
-import {
-  KEYCLOAK_EVENT_SIGNAL,
-  KeycloakEventType,
-  ReadyArgs,
-  typeEventArgs,
-} from 'keycloak-angular';
+import { ChangeDetectionStrategy, Component, effect, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import Keycloak from 'keycloak-js';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from 'keycloak-angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'sign-in',
-  template: `
-    menu
-    <div>
-      @if (authenticated()) {
-      <button (click)="logout()">Logout</button>
-      } @else {
-      <button (click)="login()">Login</button>
-      }
-    </div>
-  `,
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  template:'',
+  styleUrl: './sign-in.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SignInComponent {
-  private keycloak = inject(Keycloak);
-  private readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
-
-  authenticated = signal(false);
-
+export class SignInComponent  {
+  private readonly keyclaok = inject(Keycloak);
+  private readonly keyclaokSignal = inject(KEYCLOAK_EVENT_SIGNAL)
+  private readonly router = inject(Router);
+  
   constructor() {
     effect(() => {
-      const keycloakEvent = this.keycloakSignal();
-
-      if (keycloakEvent.type === KeycloakEventType.Ready) {
-        this.authenticated.set(typeEventArgs<ReadyArgs>(keycloakEvent.args));
-        console.log(this.authenticated());
-      }
-
-      if (keycloakEvent.type === KeycloakEventType.AuthLogout) {
-        this.authenticated.set(false);
+      const event = this.keyclaokSignal();
+      if(event.type == KeycloakEventType.Ready){
+        if(this.keyclaok.authenticated) {
+          this.router.navigate(['jira/software/for-you'])
+        }
+        else {
+          this.keyclaok.login();
+        }
       }
     });
-  }
-
-  login() {
-    this.keycloak.login();
-  }
-
-  logout() {
-    this.keycloak.logout();
   }
 }

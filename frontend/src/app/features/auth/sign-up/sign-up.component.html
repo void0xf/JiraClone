@@ -1,0 +1,142 @@
+<section
+	class="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-b from-[#F7F8F9] to-white px-4 py-8"
+	aria-labelledby="sign-up-title"
+>
+	<!-- Background Illustrations -->
+	<div class="pointer-events-none absolute bottom-0 left-0 hidden lg:block" style="width: min(28vw, 380px);">
+		<img src="/assets/auth/default_left.dfc31853.svg" alt="" class="w-full" />
+	</div>
+	<div class="pointer-events-none absolute bottom-0 right-0 hidden lg:block" style="width: min(28vw, 380px);">
+		<img src="/assets/auth/default_right.a801c0cc.svg" alt="" class="w-full" />
+	</div>
+
+	<!-- Main Card -->
+	<article class="relative z-10 w-full max-w-sm rounded-md bg-white px-8 py-8 shadow-lg">
+		<!-- Show Email Popup after successful signup -->
+		<app-sign-up-email-popup 
+			*ngIf="showEmailPopup()" 
+			[email]="submittedEmail()">
+		</app-sign-up-email-popup>
+
+		<!-- Show Signup Form initially -->
+		<div *ngIf="!showEmailPopup()">
+			<!-- Atlassian Logo -->
+			<header class="mb-6 flex justify-center">
+				<img src="/assets/auth/atlassian-logo.svg" alt="Atlassian" class="h-8" />
+			</header>
+
+			<!-- Title -->
+			<h1 id="sign-up-title" class="mb-5 text-center text-base font-semibold text-gray-900">Sign up to continue</h1>
+
+			<!-- Email Form -->
+			<form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" novalidate class="space-y-3">
+				<div>
+					<input
+						id="sign-up-email"
+						type="email"
+						formControlName="email"
+						placeholder="Enter your email"
+						autocomplete="email"
+						autofocus
+						[attr.aria-invalid]="emailControl.invalid && emailControl.touched"
+						class="h-10 bg-white w-full rounded border border-gray-300 px-3 text-sm text-gray-700 placeholder-gray-500 transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+						[ngClass]="{
+							'border-red-500 focus:border-red-500 focus:ring-red-500': emailControl.invalid && emailControl.touched
+						}"
+					/>
+					<div class="mt-1 text-xs text-red-600" *ngIf="emailControl.invalid && emailControl.touched">
+						<span *ngIf="emailControl.hasError('required')">Email is required.</span>
+						<span *ngIf="emailControl.hasError('email')">Enter a valid email address.</span>
+					</div>
+					<!-- API Error Message -->
+					<div class="mt-1 text-xs text-red-600" *ngIf="errorMessage()">
+						{{ errorMessage() }}
+					</div>
+				</div>
+				<!-- Terms Text -->
+				<div class="text-xs text-gray-700 leading-relaxed">
+					By signing up, I accept the Atlassian 
+					<a href="https://www.atlassian.com/legal/cloud-terms-of-service" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Cloud Terms of Service</a>
+					<svg class="ml-0.5 inline h-2.5 w-2.5" fill="currentColor" viewBox="0 0 20 20">
+						<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"></path>
+						<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"></path>
+					</svg>
+					and acknowledge the 
+					<a href="https://www.atlassian.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Privacy Policy</a>
+					<svg class="ml-0.5 inline h-2.5 w-2.5" fill="currentColor" viewBox="0 0 20 20">
+						<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"></path>
+						<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"></path>
+					</svg>.
+				</div>
+				
+				<!-- Sign Up Button -->
+				<button
+					type="submit"
+					[disabled]="isSubmitting"
+					class="h-10 w-full rounded bg-[#0052CC] px-4 text-sm font-semibold text-white transition hover:bg-[#0747A6] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+				>
+					<span *ngIf="!isSubmitting">Sign up</span>
+					<span *ngIf="isSubmitting" class="flex items-center justify-center gap-2">
+						<span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+						Processing…
+					</span>
+				</button>
+			</form>
+
+			<!-- Divider -->
+			<div class="my-5 flex items-center justify-center">
+				<span class="text-xs text-gray-600">Or continue with:</span>
+			</div>
+
+			<!-- Social Sign-in Buttons -->
+			<div class="space-y-2.5">
+				<button
+					*ngFor="let provider of socialProviders"
+					type="button"
+					(click)="handleSocialSignUp(provider.id)"
+					[disabled]="busyProvider !== null"
+					class="flex h-10 w-full items-center justify-center gap-2.5 rounded border border-gray-300 bg-white px-4 text-sm font-medium text-gray-900 transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+				>
+					<img [src]="provider.icon" [alt]="provider.label" class="h-5 w-5" />
+					<span>{{ provider.label }}</span>
+					<span *ngIf="busyProvider === provider.id" class="ml-auto inline-block h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></span>
+				</button>
+			</div>
+
+			<!-- Links -->
+			<div class="mt-6 flex items-center justify-center text-sm">
+				<a href="/jira/software/sign-in" class="text-blue-600 hover:underline">Already have an Atlassian account? Log in</a>
+			</div>
+
+			<!-- Footer -->
+			<footer class="mt-4 pt-8  text-center border-t border-gray-300">
+				<div class="flex justify-center">
+					<img src="/assets/auth/atlassian-logo-bottom-black.svg" alt="Atlassian" class="h-6 text-gray-500"  />
+				</div>
+				<p class="text-xs text-gray-600 mb-2 mt-2">
+					<span>One account for Jira, Confluence, Trello and </span>
+					<a href="https://www.atlassian.com/software" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">more</a>
+					<svg class="ml-0.5 inline h-2.5 w-2.5" fill="currentColor" viewBox="0 0 20 20">
+						<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"></path>
+						<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"></path>
+					</svg>
+				</p>
+				<div class="text-xs text-gray-600">
+					<span>This site is protected by reCAPTCHA and the Google </span>
+					<a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Privacy Policy</a>
+					<svg class="ml-0.5 inline h-2.5 w-2.5" fill="currentColor" viewBox="0 0 20 20">
+						<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"></path>
+						<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"></path>
+					</svg>
+					<span> and </span>
+					<a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Terms of Service</a>
+					<svg class="ml-0.5 inline h-2.5 w-2.5" fill="currentColor" viewBox="0 0 20 20">
+						<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"></path>
+						<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"></path>
+					</svg>
+					<span> apply.</span>
+				</div>
+			</footer>
+		</div>
+	</article>
+</section>

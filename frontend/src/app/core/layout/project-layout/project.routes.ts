@@ -12,7 +12,7 @@ import { ProjectBoardComponent } from '../../../features/project-managment/board
 
 export const PROJECT_ROUTES: Routes = [
   {
-    path: ':project_key', // This is relative to the path where these routes are loaded
+    path: ':project_key',
     component: ProjectLayoutComponent,
     providers: [
       provideState(projectFeatureKey, projectReducer),

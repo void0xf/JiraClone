@@ -1,0 +1,46 @@
+<div class="w-full">
+	<!-- Atlassian Logo -->
+	<header class="mb-6 flex justify-center">
+		<img src="/assets/auth/atlassian-logo.svg" alt="Atlassian" class="h-8" />
+	</header>
+
+	<!-- Title -->
+	<h1 class="mb-4 text-center text-xl font-semibold text-gray-900">We've emailed you a code</h1>
+
+	<!-- Instruction Text -->
+	<p class="mb-3 text-center text-sm text-gray-700">
+		To complete your account setup, enter the code we've sent to:
+	</p>
+
+	<!-- Email Display -->
+	<p class="mb-6 text-center text-sm font-semibold text-blue-600">{{ email }}</p>
+
+	<!-- Verification Message -->
+	<div class="mb-6 rounded-md bg-blue-50 border border-blue-200 p-4 text-center">
+		<p class="text-sm text-gray-700">
+			We sent you an email to verify your email address and set your password.
+		</p>
+	</div>
+
+	<!-- Resend Link -->
+	<div class="text-center">
+		<a href="#" class="text-sm text-blue-600 hover:underline">
+			Didn't receive an email? Resend email
+		</a>
+	</div>
+
+	<!-- Footer -->
+	<footer class="mt-8 pt-6 text-center border-t border-gray-200">
+		<div class="flex justify-center mb-3">
+			<img src="/assets/auth/atlassian-logo-bottom-black.svg" alt="Atlassian" class="h-4 opacity-60" />
+		</div>
+		<p class="text-xs text-gray-600">
+			<span>One account for Jira, Confluence, Trello and </span>
+			<a href="https://www.atlassian.com/software" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">more</a>
+			<svg class="ml-0.5 inline h-2.5 w-2.5" fill="currentColor" viewBox="0 0 20 20">
+				<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"></path>
+				<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"></path>
+			</svg>
+		</p>
+	</footer>
+</div>

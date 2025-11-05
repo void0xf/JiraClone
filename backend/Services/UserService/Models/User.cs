@@ -29,6 +29,9 @@ namespace UserService.Models
         [Required]
         [MaxLength(255)]
         public string KeycloakUserId { get; set; } = null!;
+        
+        public bool IsEmailVerified { get; set; } = false;
+        
         public PrivacySetting? FullName { get; set; }
         public PrivacySetting? PublicName { get; set; }
         public string HeaderImageUrl { get; set; } = string.Empty;
