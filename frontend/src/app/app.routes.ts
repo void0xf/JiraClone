@@ -7,6 +7,16 @@ import { guestGuard } from './core/guards/guest.guard';  // ← Import this!
 
 export const routes: Routes = [
   {
+    path: '',
+    redirectTo: '/jira/software/sign-in',
+    pathMatch: 'full',
+  },
+  {
+    path: 'jira/software',
+    redirectTo: '/jira/software/sign-in',
+    pathMatch: 'full',
+  },
+  {
     path: 'jira/software/projects',
     loadChildren: () =>
       import('./core/layout/project-layout/project.routes').then(
