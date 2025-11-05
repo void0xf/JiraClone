@@ -14,6 +14,8 @@ public enum ErrorCode
     UserNotFound = 2000,
     UserAlreadyExists = 2001,
     InvalidCredentials = 2002,
+    InvalidVerificationCode = 2003,
+    VerificationCodeExpired = 2004,
 
     // Project domain errors (3000-3099)
     ProjectsFailedToLoad = 3000,
