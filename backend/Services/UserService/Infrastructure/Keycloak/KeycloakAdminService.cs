@@ -10,8 +10,9 @@ public interface IKeycloakAdminService
     Task<Result<string>> CreateUserAsync(string email);
     Task<Result<bool>> IsEmailExistsAndUnverified(string email);
     Task<Result<bool>> IsEmailVerified(string email);
-    Task<Result<bool>> ResendVerificationEmailAsync(string email);
-}
+    Task<Result<string>> GetUserIdByEmailAsync(string email);
+    Task<Result<bool>> VerifyUserEmail(string userId);
+    Task<Result<bool>> SetRequiredAction(string userId, string action);}
 
 public class KeycloakAdminService : IKeycloakAdminService
 {
@@ -101,11 +102,14 @@ public class KeycloakAdminService : IKeycloakAdminService
             var user = new
             {
                 email,
-                username= email,
-                emailVerified = false,
+                username = email,
+                emailVerified = true,
                 enabled = true,
-                requiredActions = new[] { "VERIFY_EMAIL", "UPDATE_PASSWORD" }
+                firstName = "User",
+                lastName = "Pending",
+                requiredActions = new[] { "UPDATE_PASSWORD" }
             };
+
 
             var userJson = JsonSerializer.Serialize(user);
             var content = new StringContent(userJson, Encoding.UTF8, "application/json");
@@ -142,20 +146,6 @@ public class KeycloakAdminService : IKeycloakAdminService
 
             var userId = location.Split('/').Last();
 
-            var executeActionsUrl = $"{_baseUrl}/admin/realms/{_realm}/users/{userId}/execute-actions-email";
-            var actions = new[] { "VERIFY_EMAIL", "UPDATE_PASSWORD" };
-            var actionsJson = JsonSerializer.Serialize(actions);
-            var emailContent = new StringContent(actionsJson, Encoding.UTF8, "application/json");
-
-            var executeResponse = await client.PutAsync(executeActionsUrl, emailContent);
-
-            if (!executeResponse.IsSuccessStatusCode)
-            {
-                var errorContent = await executeResponse.Content.ReadAsStringAsync();
-                // Log the error but don't fail the user creation
-                Console.WriteLine($"Warning: Failed to send verification email. Status: {executeResponse.StatusCode}, Error: {errorContent}");
-            }
-
             return Result<string>.Success(userId);
         }
         catch (Exception ex)
@@ -169,6 +159,7 @@ public class KeycloakAdminService : IKeycloakAdminService
         }
     }
 
+    
     public async Task<Result<bool>> IsEmailExistsAndUnverified(string email)
     {
         try
@@ -342,10 +333,160 @@ public class KeycloakAdminService : IKeycloakAdminService
         }
     }
 
+    public async Task<Result<string>> GetUserIdByEmailAsync(string email)
+    {
+        try
+        {
+            var tokenResult = await GetAdminTokenAsync();
+            if (tokenResult.IsFailure)
+            {
+                return Result<string>.Failure(tokenResult.Error!);
+            }
+
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", tokenResult.Value);
+
+            var url = $"{_baseUrl}/admin/realms/{_realm}/users?email={Uri.EscapeDataString(email)}&exact=true";
+            var response = await client.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                return Result<string>.Failure(
+                    Error.Unexpected(
+                        ErrorCode.KeycloakUserCheckFailed,
+                        $"Failed to retrieve user by email. Status: {response.StatusCode}, Error: {errorContent}",
+                        "Failed to retrieve user information"));
+            }
+
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            var users = JsonSerializer.Deserialize<List<KeycloakUser>>(jsonResponse);
+
+            if (users == null || !users.Any())
+            {
+                return Result<string>.Failure(
+                    Error.NotFound(
+                        ErrorCode.UserNotFound,
+                        $"User with email {email} not found in Keycloak",
+                        "User not found"));
+            }
+
+            var userId = users.First().id;
+            return Result<string>.Success(userId);
+        }
+        catch (Exception ex)
+        {
+            return Result<string>.Failure(
+                Error.Unexpected(
+                    ErrorCode.KeycloakUserCheckFailed,
+                    "Exception while retrieving user by email",
+                    "Failed to retrieve user information",
+                    ex));
+        }
+    }
+
+    public async Task<Result<bool>> VerifyUserEmail(string userId)
+    {
+        try
+        {
+            var tokenResult = await GetAdminTokenAsync();
+            if (tokenResult.IsFailure)
+            {
+                return Result<bool>.Failure(tokenResult.Error!);
+            }
+
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", tokenResult.Value);
+
+            var updatePayload = new
+            {
+                emailVerified = true,
+                enabled = true
+            };
+
+            var json = JsonSerializer.Serialize(updatePayload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await client.PutAsync($"{_baseUrl}/admin/realms/{_realm}/users/{userId}", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                return Result<bool>.Failure(
+                    Error.Unexpected(
+                        ErrorCode.UnknownError,
+                        $"Failed to verify user email. Status: {response.StatusCode}, Error: {errorContent}",
+                        "Failed to verify email"));
+            }
+
+            return Result<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            return Result<bool>.Failure(
+                Error.Unexpected(
+                    ErrorCode.UnknownError,
+                    "Exception while verifying email",
+                    "Failed to verify email",
+                    ex));
+        }
+    }
+
+    public async Task<Result<bool>> SetRequiredAction(string userId, string action)
+    {
+        try
+        {
+            var tokenResult = await GetAdminTokenAsync();
+            if (tokenResult.IsFailure)
+            {
+                return Result<bool>.Failure(tokenResult.Error!);
+            }
+
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", tokenResult.Value);
+
+            var updatePayload = new
+            {
+                requiredActions = new[] { action }
+            };
+
+            var json = JsonSerializer.Serialize(updatePayload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await client.PutAsync($"{_baseUrl}/admin/realms/{_realm}/users/{userId}", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                return Result<bool>.Failure(
+                    Error.Unexpected(
+                        ErrorCode.UnknownError,
+                        $"Failed to set required action. Status: {response.StatusCode}, Error: {errorContent}",
+                        "Failed to set required action"));
+            }
+
+            return Result<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            return Result<bool>.Failure(
+                Error.Unexpected(
+                    ErrorCode.UnknownError,
+                    "Exception while setting required action",
+                    "Failed to set required action",
+                    ex));
+        }
+    }
+
+    
+
     private class TokenResponse
     {
-    public string access_token { get; set; } = null!;
-    public int expires_in { get; set; }
+        public string access_token { get; set; } = null!;
+        public int expires_in { get; set; }
     }
 
     private class KeycloakUser
