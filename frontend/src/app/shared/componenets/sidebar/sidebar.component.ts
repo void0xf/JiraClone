@@ -119,11 +119,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$)
       )
       .subscribe((project) => {
-        this.store.dispatch(
+        if(project.id) {
+            this.store.dispatch(
           ProjectActions.selectProject({ projectId: project.id })
         );
         this.selectionService.selectItem(project.id, SidebarItemType.PROJECT);
         this.activeItem = project.name;
+        }
       });
   }
 
@@ -137,6 +139,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   selectMenuItem(id: string, type: SidebarItemType): void {
+    console.log('here')
     if (id == 'for-you') {
       this.router.navigate(['jira/your-work']);
     }
