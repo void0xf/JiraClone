@@ -14,10 +14,6 @@ export const PROJECT_ROUTES: Routes = [
   {
     path: ':project_key',
     component: ProjectLayoutComponent,
-    providers: [
-      provideState(projectFeatureKey, projectReducer),
-      provideEffects([ProjectEffects]),
-    ],
     children: [
       { path: '', redirectTo: 'summary', pathMatch: 'full' },
       {

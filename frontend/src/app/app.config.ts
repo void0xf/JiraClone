@@ -19,6 +19,9 @@ import { envirovment } from '../../environments/environment';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
+import { provideState } from '@ngrx/store';
+import { projectFeatureKey, projectReducer } from './features/project-managment/store/project.reducer';
+import { ProjectEffects } from './features/project-managment/store/project.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -76,14 +79,9 @@ export const appConfig: ApplicationConfig = {
 
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideStore({}), // Provide root reducers here if any, otherwise empty object
-
-    // NgRx Global Effects Setup
-    provideEffects([]), // Provide root effects here if any, otherwise empty array
-
-    // Optional: NgRx Store Devtools
-    // Install with: npm install @ngrx/store-devtools --save
-
+    provideStore({}),
+    provideState(projectFeatureKey, projectReducer),
+    provideEffects([ProjectEffects]),
     provideClientHydration(withEventReplay()),
   ],
 };
