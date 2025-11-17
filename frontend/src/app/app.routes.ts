@@ -4,6 +4,8 @@ import { SignInComponent } from './features/auth/sign-in/sign-in.component';
 import { SignUpComponent } from './features/auth/sign-up/sign-up.component';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';  // ← Import this!
+import { ProjectLayoutComponent } from './core/layout/project-layout/project-layout.component';
+import { MainLayoutComponent } from './core/layout/main-layout/main-layout.component';
 
 export const routes: Routes = [
   {
@@ -26,13 +28,23 @@ export const routes: Routes = [
   },
   {
     path: 'jira/your-work',
-    component: ForYouComponent,
+    component: ProjectLayoutComponent,
+    children: [
+      {
+        path: '',
+        component: ForYouComponent,
+        title: 'For you',
+
+      }
+    ],
     canActivate: [authGuard]
   },
   {
     path: 'jira/software/for-you',
-    component: ForYouComponent,
-    canActivate: [authGuard]
+    component: MainLayoutComponent,
+    children: [
+      {path: '', component: ForYouComponent}
+    ],
   },
 
   {
