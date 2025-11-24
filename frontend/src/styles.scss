@@ -1,72 +1,118 @@
-@import "@angular/cdk/overlay-prebuilt.css";
-
+@import '@angular/cdk/overlay-prebuilt.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* LEVEL 1: PRIMITIVES TOKENS(The Palette) 
+   Global variables available to the whole app. 
+   Stored as HSL channels (Hue Saturation Lightness) without 'hsl()'.
+*/
+
+// TODO: generate real pallet of colors based on real jira colors
 :root {
-  --font-sans: "";
+  /* Neutrals */
+  --neutral-100: 240 5% 96%; /* # */
+  --neutral-300: 216 12.2% 83.92%; /* #d1d5db real jira color */
+  --neutral-400: 220 3.61% 67.45; /* #A9ABAF real jira color */
+  --neutral-700: 240 2.22% 17.65%; /* #2C2C2E */
+  --netural-800: 0 0 29.41%; /* #4B4B4B */
+  --neutral-900: 240 3.13% 12.55%; /* #1F1F21 real jira color*/
+
+  /* Blues */
+  --blue-400: 218 90% 67%; /* #5e96f7 */
+  --blue-600: 218 91% 67%; /* #2F4F7D real jira color*/
+  --blue-900: 218 54% 20%; /* #1A2C3A real jira color*/
+
+  /* Purples */
+  --purple-400: 270 95% 75%; /* #c084fc */
+
+  /* System Defaults */
+  --font-sans: 'Inter', sans-serif; /* Add your font here */
 }
 
-:root .theme-jira {
-  --background: 0 0% 100%;
-  --foreground: 240 10% 3.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 240 10% 3.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 3.9%;
-  --primary: 220, 4%, 67%;
-  --primary-foreground: transparent;
-  --secondary: 240 4.8% 95.9%;
-  --secondary-foreground: 240 5.9% 10%;
-  --muted: 240 4.8% 95.9%;
-  --muted-foreground: 240 3.8% 46.1%;
-  --accent: 240 4.8% 95.9%;
-  --accent-foreground: 240 5.9% 10%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 5.9% 90%;
-  --input: 240 5.9% 90%;
-  --ring: 240 5.9% 10%;
-  --radius: 0.5rem;
-  --board-column-background: 210, 4%, 10%;
-  --board-column-card-background: 225, 5%, 15%;
-  color-scheme: light;
-}
-
-.theme-jira.dark {
-  color: hsl(220, 13%, 69%);
-  --background: 240, 3%, 13%;
-  --foreground: 220, 13%, 69%;
-  --card: 240 10% 3.9%;
-  --card-foreground: 220, 13%, 69%;
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 220, 13%, 69%;
-  --primary: transparent;
-  --primary-foreground: 220, 13%, 69%;
-  --secondary: 216, 84%, 67%;
-  --secondary-foreground: 240, 3%, 13%;
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 220, 13%, 69%;
-  --accent: 240 3.7% 15.9%;
-  --accent-foreground: 220, 13%, 69%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.9%;
-  --input: 220, 13%, 69%;
-  --ring: 240 4.9% 83.9%;
-  --board-column-background: hsl(210, 4%, 10%) ;
-  --board-column-card-background: hsl(225, 5%, 15%);
-  --dialog-background: hsl(225, 4%, 18%);
-  --drop-down-background: #222222;
-  --dialog-input-background: #222222;
-  --drop-down-selected-background: #123263;
-  
-  color-scheme: dark;
-}
-
+/* LEVEL 2: SEMANTICS TOKENS(The Theme) 
+   Maps logic to the primitives above.
+*/
 @layer base {
+  /* LIGHT THEME */
+  :root .theme-jira {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    --primary: 221 83% 53%; /* Mapped to Blue-600 */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+
+    --radius: 0.5rem;
+
+    /* Custom Jira Specifics */
+    --board-col-bg: 240 5% 96%;
+    --board-card-bg: 0 0% 100%;
+  }
+
+  /* DARK THEME */
+  .theme-jira.dark {
+    --background: var(--neutral-900);
+    --background-hover: var(--neutral-700);
+    --background-active: var(--blue-900);
+
+    --foreground: var(--neutral-300);
+    --foreground-hover: var(--neutral-400);
+    --foreground-active: var(--blue-600);
+
+    --card: var(--neutral-900);
+    --card-foreground: var(--neutral-100);
+    --popover: var(--neutral-900);
+    --popover-foreground: var(--neutral-100);
+
+    --secondary: 217 19% 27%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 19% 27%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 217 19% 27%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 19% 27%;
+    --input: 217 19% 27%;
+    --ring: 212 100% 48%;
+
+    /* Custom Jira Specifics */
+    --board-col-bg: 210 4% 10%;
+    --board-card-bg: 225 5% 15%;
+    --dialog-bg: 225 4% 18%;
+  }
+
   * {
     @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
   }
 }
