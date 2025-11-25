@@ -35,6 +35,8 @@ import { Store } from '@ngrx/store';
 import * as ProjectSelectors from '../../../features/project-managment/store/project.selectors';
 import * as ProjectActions from '../../../features/project-managment/store/actions/project.actions';
 import { ProjectState } from '../../../features/project-managment/store/project.state';
+import { Dialog } from '@angular/cdk/dialog';
+import { ProjectCreationWizardComponent } from '../../../features/project-managment/project-creation-wizard/project-creation-wizard.component';
 
 @Component({
   selector: 'app-sidebar',
@@ -90,16 +92,15 @@ export class SidebarComponent implements OnInit, OnDestroy {
   // private store = inject(Store<ProjectState>);
 
   constructor(
+    private dialog: Dialog,
     private sidebarService: SidebarService,
     private selectionService: SidebarSelectionService,
     private router: Router,
     private route: ActivatedRoute,
-    private store: Store<ProjectState>
+    private store: Store<ProjectState>,
   ) {
     this.projectsData$ = this.store.select(ProjectSelectors.selectAllProjects);
-    this.projectsIsLoading$ = this.store.select(
-      ProjectSelectors.selectProjectsLoading
-    );
+    this.projectsIsLoading$ = this.store.select(ProjectSelectors.selectProjectsLoading);
   }
 
   ngOnInit(): void {
@@ -110,21 +111,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
         map((params) => params.get('project_key')),
         filter((projectKey): projectKey is string => !!projectKey),
         switchMap((projectKey) =>
-          this.store.select(
-            ProjectSelectors.selectProjectByProjectKey,
-            projectKey
-          )
+          this.store.select(ProjectSelectors.selectProjectByProjectKey, projectKey),
         ),
         filter((project): project is Project => !!project),
-        takeUntil(this.destroy$)
+        takeUntil(this.destroy$),
       )
       .subscribe((project) => {
-        if(project.id) {
-            this.store.dispatch(
-          ProjectActions.selectProject({ projectId: project.id })
-        );
-        this.selectionService.selectItem(project.id, SidebarItemType.PROJECT);
-        this.activeItem = project.name;
+        if (project.id) {
+          this.store.dispatch(ProjectActions.selectProject({ projectId: project.id }));
+          this.selectionService.selectItem(project.id, SidebarItemType.PROJECT);
+          this.activeItem = project.name;
         }
       });
   }
@@ -139,7 +135,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   selectMenuItem(id: string, type: SidebarItemType): void {
-    console.log('here')
+    console.log('here');
     if (id == 'for-you') {
       this.router.navigate(['jira/your-work']);
     }
@@ -156,14 +152,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
   handleProjectItemClick(project: Project): void {
     this.activeItem = project.name;
     this.store.dispatch(ProjectActions.selectProject({ projectId: project.id }));
-    this.router.navigate([
-      '/jira/software/projects',
-      project.projectKey,
-      'summary',
-    ]);
+    this.router.navigate(['/jira/software/projects', project.projectKey, 'summary']);
   }
   handleProjectsAdd(event: MouseEvent): void {
-    console.log('Add Project clicked');
+    this.dialog.open(ProjectCreationWizardComponent);
   }
 
   handleProjectsMore(event: MouseEvent): void {
