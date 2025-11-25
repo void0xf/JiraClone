@@ -18,6 +18,7 @@ module.exports = {
         },
         foreground: {
           DEFAULT: hsl('--foreground'),
+          secondary: hsl('--foreground-secondary'),
           hover: hsl('--foreground-hover'),
           active: hsl('--foreground-active'),
         },
