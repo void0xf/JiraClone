@@ -1,6 +1,8 @@
 ﻿services:
   projectdb:
     image: postgres
+  project_temlpatedb:
+    image: postgres
   issuedb:
     image: postgres
   userdb:
@@ -10,14 +12,13 @@
   keycloak: # Defines the Keycloak service name
     image: quay.io/keycloak/keycloak:latest # Or pin to a specific version e.g., 21.1.1
 
-
 networks:
   my_network:
     driver: bridge
 
-
 volumes:
   postgres_projectdb:
+  postgres_project_templatedb:
   postgres_issuedb:
   postgres_userdb:
   postgres_data:

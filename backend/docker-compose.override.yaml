@@ -7,9 +7,20 @@
       - POSTGRES_DB=ProjectDb
     restart: always
     ports:
-     - "15432:5432"
+      - "15432:5432"
     volumes:
-     - postgres_projectdb:/var/lib/postgresql/data
+      - postgres_projectdb:/var/lib/postgresql/data
+  project_temlpatedb:
+    container_name: project_temlpatedb
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=project_temlpatedb
+    restart: always
+    ports:
+      - "15435:5432"
+    volumes:
+      - postgres_project_templatedb:/var/lib/postgresql/data
   issuedb:
     container_name: issuedb
     environment:
@@ -18,9 +29,9 @@
       - POSTGRES_DB=IssueDb
     restart: always
     ports:
-     - "15433:5432"
+      - "15433:5432"
     volumes:
-     - postgres_issuedb:/var/lib/postgresql/data   
+      - postgres_issuedb:/var/lib/postgresql/data
   userdb:
     container_name: userdb
     environment:
@@ -32,7 +43,7 @@
       - "15434:5432"
     volumes:
       - postgres_userdb:/var/lib/postgresql/data
-  
+
   postgres-db:
     container_name: postgres-db-keycloak
     volumes:
@@ -44,15 +55,14 @@
     networks:
       - my_network
     restart: unless-stopped
-  
-  
+
   keycloak:
     container_name: keycloak
-    command: [ 'start-dev', '--import-realm' ]
+    command: ["start-dev", "--import-realm"]
     environment:
-      KEYCLOAK_ADMIN: admin 
+      KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: YourStrongAdminPassword
-      
+
       KC_DB: postgres
       KC_DB_URL_HOST: postgres-db # Service name of the Keycloak DB container
       KC_DB_URL_DATABASE: keycloak_db # DB Name
@@ -69,6 +79,4 @@
       - my_network
     restart: unless-stopped
 
-
   # Define the network
-  
